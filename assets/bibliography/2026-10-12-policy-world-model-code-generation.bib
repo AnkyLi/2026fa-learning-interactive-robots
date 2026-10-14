@@ -11,3 +11,33 @@
   journal={NeurIPS},
   year={2018}
 }
+
+@inproceedings{singh_progprompt_2023,
+	title = {ProgPrompt: Generating Situated Robot Task Plans using Large Language Models},
+	shorttitle = {ProgPrompt},
+	url = {https://ieeexplore.ieee.org/document/10161317/},
+	doi = {10.1109/ICRA48891.2023.10161317},
+	abstract = {Task planning can require defining myriad domain knowledge about the world in which a robot needs to act. To ameliorate that effort, large language models (LLMs) can be used to score potential next actions during task planning, and even generate action sequences directly, given an instruction in natural language with no additional domain information. However, such methods either require enumerating all possible next steps for scoring, or generate free-form text that may contain actions not possible on a given robot in its current context. We present a programmatic LLM prompt structure that enables plan generation functional across situated environments, robot capabilities, and tasks. Our key insight is to prompt the LLM with program-like specifications of the available actions and objects in an environment, as well as with example programs that can be executed. We make concrete recommendations about prompt structure and generation constraints through ablation experiments, demonstrate state of the art success rates in VirtualHome household tasks, and deploy our method on a physical robot arm for tabletop tasks. Website at progprompt.github.io},
+	urldate = {2026-10-14},
+	booktitle = {2023 IEEE International Conference on Robotics and Automation (ICRA)},
+	author = {Singh, Ishika and Blukis, Valts and Mousavian, Arsalan and Goyal, Ankit and Xu, Danfei and Tremblay, Jonathan and Fox, Dieter and Thomason, Jesse and Garg, Animesh},
+	month = may,
+	year = {2023},
+	keywords = {Automation, Manipulators, Natural languages, Planning, Task analysis},
+	pages = {11523--11530},
+}
+
+@inproceedings{tang_worldcoder_2024,
+	title = {WorldCoder, a Model-Based LLM Agent: Building World Models by Writing Code and Interacting with the Environment},
+	volume = {37},
+	shorttitle = {WorldCoder, a Model-Based LLM Agent},
+	url = {https://proceedings.neurips.cc/paper_files/paper/2024/hash/820c61a0cd419163ccbd2c33b268816e-Abstract-Conference.html},
+	doi = {10.52202/079017-2243},
+	abstract = {We give a model-based agent that builds a Python program representing its knowledge of the world based on its interactions with the environment. The world model tries to explain its interactions, while also being optimistic about what reward it can achieve. We define this optimism as a logical constraint between a program and a planner. We study our agent on gridworlds, and on task planning, finding our approach is more sample-efficient compared to deep RL, more compute-efficient compared to ReAct-style agents, and that it can transfer its knowledge across environments by editing its code.},
+	urldate = {2026-10-14},
+	booktitle = {Advances in Neural Information Processing Systems},
+	publisher = {Curran Associates, Inc.},
+	author = {Tang, Hao and Key, Darren and Ellis, Kevin},
+	year = {2024},
+	pages = {70148--70212},
+}
