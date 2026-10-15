@@ -145,7 +145,7 @@ After collecting feedback, the system fine-tunes the high-level policy using the
 $$
 \large
 \pi_H^{(n+1)}=
-\operatorname{PostTraining}\left(
+\mathrm{PostTraining}\left(
 \pi_H^{(n)},
 \mathcal D\cup\bigcup_{i=1}^{n}\mathcal D_{\mathrm{corr}}^{(i)}
 \right).
