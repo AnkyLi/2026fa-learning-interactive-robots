@@ -64,6 +64,7 @@ The initial dataset $$\mathcal D$$ contains robot demonstrations annotated with 
 The low-level policy is initially trained through **behavior cloning**: predict the action that the demonstrator took under the same observation and instruction. Writing the predicted action as $$\hat a_t=f_{\theta_L}(o_t,l_t)$$, the basic objective is
 
 $$
+\large
 \min_{\theta_L}
 \mathbb E_{(o_t,l_t,a_t)\sim\mathcal D}
 \left[\mathcal L_{\mathrm{BC}}\left(f_{\theta_L}(o_t,l_t),a_t\right)\right].
@@ -80,6 +81,7 @@ The high-level policy predicts a **language embedding** from recent visual obser
 Let $$h_t=f_{\theta_H}(o_{t-k:t})$$ be the predicted embedding and $$e_j$$ the DistilBERT embedding of candidate instruction $$l_j$$. The model scores each candidate with cosine similarity and applies a softmax:
 
 $$
+\large
 z_j=\frac{h_t^\top e_j}{\|h_t\|\,\|e_j\|},
 \qquad
 P_{\theta_H}(l_j\mid o_{t-k:t})
@@ -91,6 +93,7 @@ The learned temperature $$\tau>0$$ controls how concentrated the probabilities a
 The high-level training objective is cross-entropy against the demonstrated instruction:
 
 $$
+\large
 \min_{\theta_H}
 \mathbb E_{(o_{t-k:t},l_t)\sim\mathcal D}
 \left[-\log P_{\theta_H}(l_t\mid o_{t-k:t})\right].
@@ -103,6 +106,7 @@ This expands the cross-entropy objective in Equation (2): increase the probabili
 During autonomous operation, the high-level policy selects an instruction $$l^H$$. A human can interrupt and supply a corrective instruction $$l^{\mathrm{user}}$$, which temporarily overrides that selection. Equation (3) describes the switch:
 
 $$
+\large
 \pi_{\mathrm{deploy}}(a_t\mid o_{t-k:t})=
 \begin{cases}
 \pi_L(a_t\mid o_t,l^{\mathrm{user}}), & \text{if the human intervenes},\\
@@ -117,6 +121,7 @@ For example, if the robot needs a directional adjustment while inserting an obje
 After collecting feedback, the system fine-tunes the high-level policy using the original data and the correction data, with the same cross-entropy objective. Equation (4) summarizes successive rounds:
 
 $$
+\large
 \pi_H^{(n+1)}=
 \operatorname{PostTraining}\left(
 \pi_H^{(n)},
