@@ -53,6 +53,17 @@ Yell At Your Robot (YAY Robot) uses **human language corrections as supervision 
 
 ### Yell At Your Robot: Method and Formulation
 
+{% include figure.liquid
+   path="assets/img/2026-10-14-feedback-and-correction/yay-robot-figure-3-method-overview.png"
+   class="img-fluid rounded z-depth-1"
+   alt="YAY Robot overview showing visual observations, a high-level language policy, a frozen low-level controller, and human verbal intervention."
+   caption="Method overview, reproduced from Shi et al. (2024), Figure 3."
+   zoomable=true
+   avoid_scaling=true
+%}
+
+The overview shows how observations, instructions, and actions connect. Camera images inform the high-level policy, which selects a language command. The low-level policy combines that command with its observations to produce joint targets. The human intervention joins the language pathway, so a correction changes the instruction passed to the controller. The orange arrow shows how recorded language feedback later updates the high-level policy; the snowflake marks the low-level policy as frozen during this phase. These two pathways correspond to the intervention rule and post-training update explained below. <d-cite key="shi2024yell"></d-cite>
+
 #### Two Policies Connected by Language
 
 Let $$o_t$$ denote the robot's observation at time $$t$$, $$a_t$$ its motor action, and $$l_t$$ a language instruction. Observations include camera images and robot joint information; the actions are target joint positions. The low-level policy $$\pi_L(a_t \mid o_t,l_t)$$ executes the instruction. The high-level policy uses a recent observation history, written $$o_{t-k:t}$$, to select that instruction. History helps distinguish situations that look similar in a single frame but occur at different stages of a task.
@@ -73,6 +84,17 @@ $$
 This is the action-imitation objective in Equation (1) of the paper, expressed using an explicit prediction function. The loss measures how far the predicted movement is from the demonstrated movement.
 
 In the implementation, the authors adapt **Action Chunking with Transformers (ACT)** to predict a sequence of actions rather than one action at a time, using an $$\ell_1$$ imitation loss. EfficientNet encodes camera images, DistilBERT encodes the instruction, and FiLM layers condition the visual features on language before the ACT controller predicts joint targets. Language therefore influences how the low-level skill is executed. <d-cite key="shi2024yell"></d-cite>
+
+{% include figure.liquid
+   path="assets/img/2026-10-14-feedback-and-correction/yay-robot-figure-4-policy-architecture.png"
+   class="img-fluid rounded z-depth-1"
+   alt="Policy architecture with observation-history encoding and instruction retrieval on the left, and a language-conditioned ACT controller predicting joint targets on the right."
+   caption="Policy architecture, reproduced from Shi et al. (2024), Figure 4."
+   zoomable=true
+   avoid_scaling=true
+%}
+
+Read the architecture from left to right. In the left panel, camera-image histories pass through the image encoder and Transformer to predict a language embedding. An embedding represents an instruction as a vector, allowing the prediction to be compared with the available commands. The nearest command becomes the language input to the right panel. There, DistilBERT encodes the instruction, and FiLM uses it to modulate the visual features, helping the controller interpret the scene in relation to the requested behavior. The ACT Transformer combines these features with joint information to predict a sequence of joint targets. The next subsection explains how the instruction-retrieval step is trained. <d-cite key="shi2024yell"></d-cite>
 
 #### Selecting an Instruction from Recent Observations
 
