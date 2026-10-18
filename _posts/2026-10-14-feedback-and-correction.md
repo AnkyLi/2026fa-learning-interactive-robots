@@ -9,11 +9,11 @@ ready: false
 
 # Reporter team authors
 authors:
-  - name: "Jinyoon Kim (xna8aw)"
-  - name: "Austin Song (rtx2nb)"
-  - name: "Boyang Yan (rhe9cf)"
-  - name: "Sai Tarra (mmk3rs)"
-  - name: "Harris Ilyas (tnb6hv)"
+  - name: "Jinyoon Kim"
+  - name: "Austin Song"
+  - name: "Boyang Yan"
+  - name: "Sai Tarra"
+  - name: "Harris Ilyas"
 
 bibliography: 2026-10-14-feedback-and-correction.bib
 
@@ -151,7 +151,7 @@ $$
 \right).
 $$
 
-Here, $$\mathcal D_{\mathrm{corr}}^{(i)}$$ contains the corrections collected in round $$i$$. These examples expose the high-level policy to situations encountered during actual robot execution, including failures that need corrective instructions. In this sense, the procedure resembles dataset aggregation in imitation learning, with humans supplying language instructions as the high-level action labels. <d-cite key="shi2024yell"></d-cite> <d-cite key="ross2011reduction"></d-cite>
+Here, $$\mathcal D_{\mathrm{corr}}^{(i)}$$ contains the corrections collected in round $$i$$. These examples expose the high-level policy to situations encountered during actual robot execution, including failures that need corrective instructions. <d-cite key="shi2024yell"></d-cite>
 
 **The low-level controller remains frozen throughout post-training.** A correction example therefore needs the observations and the human instruction, without an additional teleoperated motor-action demonstration. The system learns when to invoke existing skills and corrections; learning a new physical skill would require improving the low-level controller as well. This distinction explains how verbal feedback can improve autonomous behavior while keeping the underlying motor skills fixed. <d-cite key="shi2024yell"></d-cite>
 
