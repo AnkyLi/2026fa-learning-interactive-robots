@@ -155,9 +155,71 @@ Here, $$\mathcal D_{\mathrm{corr}}^{(i)}$$ contains the corrections collected in
 
 **The low-level controller remains frozen throughout post-training.** A correction example therefore needs the observations and the human instruction, without an additional teleoperated motor-action demonstration. The system learns when to invoke existing skills and corrections; learning a new physical skill would require improving the low-level controller as well. This distinction explains how verbal feedback can improve autonomous behavior while keeping the underlying motor skills fixed. <d-cite key="shi2024yell"></d-cite>
 
-### Yell At Your Robot: Experiments and Results
+### Yell At Your Robot: Experiments and Results <d-cite key="shi2024yell"></d-cite>
 
-### Yell At Your Robot: Limitations and Takeaways
+The authors tested YAY Robot on three tasks: putting a Sharpie, tape holder, and sponge into a Ziploc bag; making trail mix; and cleaning gummy bears off a plate with a sponge. These tasks are difficult because small mistakes can build up over several steps. They ran 20 trials for each evaluation and measured success on both individual steps and the full task.
+
+They compared three versions: the Base Policy, which worked without extra help; YAY Robot + Oracle Corrections, where a person could give spoken corrections while the robot worked; and YAY Robot After Finetuning, which learned from those corrections and was then tested without further help. The low level controller stayed the same, so the robot learned when to choose instructions it already knew how to follow rather than learning new movements.
+
+The results show that spoken corrections can help the robot succeed, and that some of this improvement carries over to later attempts. Overall, the paper reports about a 20% improvement in success rate over the base policy across the three tasks. Figure 6 compares the results for the base policy, the fine tuned robot, and the robot receiving corrections during the task.
+
+{% include figure.liquid
+   path="assets/img/2026-10-14-feedback-and-correction/yay-robot-figure-6-quantitative-evaluations.png"
+   class="img-fluid rounded z-depth-1"
+   alt="Bar charts comparing the base policy, the fine-tuned YAY Robot, and human-provided corrections across bag packing, trail mix preparation, and plate cleaning."
+   caption="Success rates across the three tasks, reproduced from Shi et al. (2024), Figure 6."
+   zoomable=true
+   avoid_scaling=true
+%}
+
+Figure 7 shows that bag packing results improved over repeated rounds of feedback and fine tuning, getting closer to the results achieved when a person corrected the robot directly. The robot also began choosing useful recovery instructions on its own, such as adjusting a gripper before trying again. Figures 9 and 10 show a similar change in plate cleaning: the robot covered more of the plate and used corrective cleaning instructions more often after fine tuning.
+
+{% include figure.liquid
+   path="assets/img/2026-10-14-feedback-and-correction/yay-robot-figure-7-iterative-improvement.png"
+   class="img-fluid rounded z-depth-1"
+   alt="Line chart showing bag-packing success improving over repeated rounds of verbal feedback and fine-tuning, alongside results with human-provided corrections."
+   caption="Improvement in bag-packing performance over repeated fine-tuning rounds, reproduced from Shi et al. (2024), Figure 7."
+   zoomable=true
+   avoid_scaling=true
+%}
+
+The authors also compared YAY Robot with other ways of choosing instructions. Its learned approach generally did better than a flat imitation learning policy, especially during later steps of a task. A fixed sequence of instructions could not respond to unexpected mistakes, and GPT-4V sometimes misunderstood where objects were or what the robot was doing. These results suggest that the robot benefits from a learned policy that can choose instructions based on the situation.
+
+{% include figure.liquid
+   path="assets/img/2026-10-14-feedback-and-correction/yay-robot-figure-8-ablation-high-level-policy.png"
+   class="img-fluid rounded z-depth-1"
+   alt="Bar charts comparing YAY Robot's learned high-level policy with a fixed instruction sequence, GPT-4V, and one-hot skill labels."
+   caption="Comparison of alternative ways to select high-level instructions, reproduced from Shi et al. (2024), Figure 8."
+   zoomable=true
+   avoid_scaling=true
+%}
+
+{% include figure.liquid
+   path="assets/img/2026-10-14-feedback-and-correction/yay-robot-figure-9-policy-proficiency-finetuning.png"
+   class="img-fluid rounded z-depth-1"
+   alt="Plate-cleaning heatmaps comparing cleaning coverage before and after fine-tuning; brighter areas show where wiping was more effective."
+   caption="Plate-cleaning coverage before and after fine-tuning, reproduced from Shi et al. (2024), Figure 9."
+   zoomable=true
+   avoid_scaling=true
+%}
+
+{% include figure.liquid
+   path="assets/img/2026-10-14-feedback-and-correction/yay-robot-figure-10-correction-skill-ratio.png"
+   class="img-fluid rounded z-depth-1"
+   alt="Charts showing that the robot used corrective cleaning instructions more often after fine-tuning."
+   caption="Changes in the use of corrective cleaning instructions after fine-tuning, reproduced from Shi et al. (2024), Figure 10."
+   zoomable=true
+   avoid_scaling=true
+%}
+
+### Yell At Your Robot: Limitations and Takeaways <d-cite key="shi2024yell"></d-cite>
+
+YAY Robot can only follow a correction if its low level controller already knows how to carry out that instruction. Fine tuning helps it choose better instructions, but does not teach it entirely new movements. The results suggest that improving the robot's existing skills is still important.
+
+The system also relies on spoken instructions and cannot easily understand pointing or gestures. The authors suggest that future systems could combine speech with these other ways of communicating. Their GPT-4V results also show that a general vision language model may misunderstand object positions or what is happening during a task.
+
+The quality of the training data matters, too. Adding more examples did not always improve results when the extra data included poor or unsuccessful behavior. Overall, YAY Robot shows that simple spoken corrections can help a robot recover in the moment and make better choices next time. However, its performance still depends on the skills it already has, the quality of its training data, and people's ability to explain corrections in words.
+
 
 ## Learning to Learn Faster from Human Feedback with Language Model Predictive Control
 
@@ -179,7 +241,10 @@ Here, $$\mathcal D_{\mathrm{corr}}^{(i)}$$ contains the corrections collected in
 
    **A (class discussion):** There was no definitive way identified in the discussion to distinguish between these possibilities. Zero-shot evaluation on previously unseen failure situations was suggested as a way to investigate this question. If the robot can recover in those situations without additional human corrections, that would provide evidence that its learned behavior generalizes beyond the corrections seen during training.
 
-<!-- Add further YAY Robot questions as numbered Q&A entries above. -->
+2. **Q: Is fine tuning a separate step from the live correction process? How?**
+
+   **A (class discussion):** Yes. Live corrections are collected while the robot performs the task, and those corrections are then used in a separate fine-tuning step to improve the high level policy. The updated policy can then apply what it learned in future runs without requiring live human intervention.
+
 
 ### Language Model Predictive Control Questions
 
