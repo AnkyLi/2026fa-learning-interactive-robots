@@ -228,9 +228,68 @@ The quality of the training data matters, too. Adding more examples did not alwa
 ### Language Model Predictive Control: Method and Formulation
 
 ### Language Model Predictive Control: Experiments and Results
+The authors evaluated LMPC on 78 tasks across five robot embodiments in simulation, with additional tests on two real robots. They collected feedback from 35 non-expert users, who could give up to seven rounds of feedback per session. The evaluation measured task success, the number of chat turns needed for success, and how well the models responded to corrections.
 
+They compared PaLM 2-S, a retrieval-augmented generation (RAG) baseline, LMPC-Skip, and LMPC-Rollouts. Figure 4 plots how success changes as users are allowed more chat turns. On unseen tasks, LMPC-Rollouts reached 66.3% success compared with 39.4% for PaLM 2-S, a 26.9 percentage-point improvement.
+
+{% include figure.liquid
+path="assets/img/2026-10-14-feedback-and-correction/lmpc-figure-4-teachability.png"
+class="img-fluid rounded z-depth-1"
+alt="Line charts comparing task success rates as the number of chat turns increases on train and test tasks."
+caption="Teachability across training and unseen tasks, reproduced from Liang et al. (2024), Figure 4."
+zoomable=true
+avoid_scaling=true
+%}
+
+Table I shows a tradeoff between the two fine-tuned methods. LMPC-Skip did better on the first instruction (41.7% versus 34.8% on test tasks), but LMPC-Rollouts had more successes after corrective feedback (31.5% versus 17.8%). The authors suggest using Skip initially and Rollouts for later corrections.
+
+{% include figure.liquid
+path="assets/img/2026-10-14-feedback-and-correction/lmpc-table-1-results.png"
+class="img-fluid rounded z-depth-1"
+alt="Table comparing overall, one-turn, and multi-turn success rates for PaLM 2-S, RAG, LMPC-Skip and LMPC-Rollouts."
+caption="Success rates by method and number of turns, excerpted from Liang et al. (2024), Table I."
+zoomable=true
+avoid_scaling=true
+%}
+
+The authors also tested top-user conditioning. Table II shows that removing it lowered performance, while training only on the top users was also insufficient. This suggests the model benefits from diverse teaching examples while being guided toward more effective feedback styles.
+
+{% include figure.liquid
+path="assets/img/2026-10-14-feedback-and-correction/lmpc-table-2-top-user-conditioning.png"
+class="img-fluid rounded z-depth-1"
+alt="Ablation table showing declines in train- and test-task success when top-user conditioning is removed."
+caption="Effects of removing top-user conditioning, reproduced from Liang et al. (2024), Table II."
+zoomable=true
+avoid_scaling=true
+%}
+
+To test generalization, the authors trained on Robot Dog, Mobile Manipulator, and ALOHA, then evaluated on two unseen KUKA embodiments. LMPC-Rollouts improved success by 31.5 percentage points over PaLM 2-S on these new robots, even though their APIs and tasks differed from those seen during training.
+
+{% include figure.liquid
+path="assets/img/2026-10-14-feedback-and-correction/lmpc-table-4-cross-embodiment.png"
+class="img-fluid rounded z-depth-1"
+alt="Success-rate improvements on training embodiments and previously unseen robot embodiments."
+caption="Cross-embodiment generalization, reproduced from Liang et al. (2024), Table IV."
+zoomable=true
+avoid_scaling=true
+%}
+
+Finally, the simulation-trained model was evaluated on real Robot Dog and Mobile Manipulator tasks, shown in Figure 5. Average task success increased from 53.8% to 75%, although the average number of chat turns did not decrease. These results suggest the learned feedback strategy can transfer to real robots, but greater success does not always mean fewer corrections.
+
+{% include figure.liquid
+path="assets/img/2026-10-14-feedback-and-correction/lmpc-figure-5-real-robot-tasks.png"
+class="img-fluid rounded z-depth-1"
+alt="Photographs of a real robot dog performing poses and a mobile manipulator opening a drawer and moving a can."
+caption="Examples of real-world robot tasks, reproduced from Liang et al. (2024), Figure 5."
+zoomable=true
+avoid_scaling=true
+%}
 ### Language Model Predictive Control: Limitations and Takeaways
+One limitation of LMPC is its high computational cost, since fine-tuning the language model and predicting future conversations require substantial resources, with the robot controller potentially needing around 128 CPU cores.
 
+LMPC also depends on successful teaching interactions for training, which makes it difficult to improve on tasks the base model cannot solve. To add onto this, the system only models language feedback, without incorporating gestures or other forms of human communication.
+
+One important thing to note as well is that repeated fine-tuning did not improve performance either, with a second round decreasing success by 1.9 percentage points on test tasks. Most evaluations were also conducted in simulation, limiting conclusions about real-world generalization. Ultimately, LMPC shows that learning from human feedback improves robot adaptability, but computational cost and training data requirements remain significant challenges.
 ## Comparison and Synthesis
 
 ## Classroom Questions and Discussion
