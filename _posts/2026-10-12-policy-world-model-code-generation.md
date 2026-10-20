@@ -113,16 +113,16 @@ Robot plans are represented as Pythonic programs. The prompt is structured as Py
 **Prompt Design**
 
 The prompt is written as a Python file with 4 parts:
-1. **Action Primitives as Imports**
-2. **Available Objects List**
-3. **Example Tasks**
-4. **Open-Ended Function Header**
+1. Action Primitives as Imports
+2. Available Objects List
+3. Example Tasks
+4. Open-Ended Function Header
 
 **Task Plan Generation & Execution**
 
 {% include figure.liquid path="assets/img/2026-10-12-policy-world-model-code-generation/r2-p1-funcex.png"
 class="img-fluid rounded z-depth-1"
-caption="Pythonic ProgPrompt plan for "put salmon in the microwave"."
+caption="Pythonic ProgPrompt plan for put salmon in the microwave."
 %}
 
 Generated plan functions, as shown in the figure, contain the following key components:
@@ -195,7 +195,7 @@ class="img-fluid rounded z-depth-1"
 caption="Robot plan execution rollout example on a sorting task."
 %}
 
-- The LLM recognizes the banana and strawberry as ruits.
+- The LLM recognizes the banana and strawberry as fruits.
 - The LLM ignores the distractor object.
 
 {% include figure.liquid path="assets/img/2026-10-12-policy-world-model-code-generation/r2-p1-exptable.png"
