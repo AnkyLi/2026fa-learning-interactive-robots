@@ -225,6 +225,11 @@ The quality of the training data matters, too. Adding more examples did not alwa
 ## Learning to Learn Faster from Human Feedback with Language Model Predictive Control
 
 ### Language Model Predictive Control: Motivation and Problem
+A general-purpose robot may be controlled by a large language model (LLM) that translates an instruction such as "make the robot crouch" or "move the can into the drawer" into executable code. Non-expert users can then inspect the behavior and issue follow-up corrections. This kind of **in-context learning** is useful because it requires no weight update during a conversation; the model can react using the current dialogue history. However, adaptation based on the prompt is temporary, may disappear when earlier messages exceed the context window, and does not necessarily make the model better at responding to the next user's corrections.
+
+The paper asks how a code-writing LLM can become more **teachable**: how successfully and efficiently can a non-expert bring it to a desired robot behavior through a limited number of conversational corrections? This is distinct from measuring whether the first code sample works. An initially incorrect output may still be useful if the model understands feedback and quickly produces a successful revision. Conversely, a system that repeatedly makes similar mistakes imposes a large teaching burden even if it occasionally succeeds.
+
+The authors distinguish two adaptation timescales. **Fast adaptation** happens online as the LLM conditions on the current chat and generates revised code. **Slow adaptation** happens offline, when interactions from earlier teaching sessions are used to fine-tune the LLM. The proposed Language Model Predictive Control (LMPC) connects these two: it uses previously observed teaching trajectories to learn about future dialogue and searches for next responses likely to reach task success with fewer corrections. Unlike conventional MPC, which normally predicts physical state evolution under control inputs, LMPC applies predictive control to the *human–LLM interaction sequence*.
 
 ### Language Model Predictive Control: Method and Formulation
 
