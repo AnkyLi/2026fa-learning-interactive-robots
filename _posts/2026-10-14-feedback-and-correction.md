@@ -32,11 +32,7 @@ toc:
       - name: "Language Model Predictive Control: Experiments and Results"
       - name: "Language Model Predictive Control: Limitations and Takeaways"
   - name: "Comparison and Synthesis"
-  - name: "Classroom Questions and Discussion"
-    subsections:
-      - name: "YAY Robot Questions"
-      - name: "Language Model Predictive Control Questions"
-      - name: "General Discussion"
+  - name: "Discussion"
 ---
 
 ## Introduction
@@ -297,27 +293,16 @@ LMPC also depends on successful teaching interactions for training, which makes 
 One important thing to note as well is that repeated fine-tuning did not improve performance either, with a second round decreasing success by 1.9 percentage points on test tasks. Most evaluations were also conducted in simulation, limiting conclusions about real-world generalization. Ultimately, LMPC shows that learning from human feedback improves robot adaptability, but computational cost and training data requirements remain significant challenges.
 ## Comparison and Synthesis
 
-## Classroom Questions and Discussion
-
-### YAY Robot Questions
+## Discussion
 
 1. **Q: Is YAY Robot learning a general recovery strategy, or simply imitating the corrections provided by humans?**
 
    **A (class discussion):** There was no definitive way identified in the discussion to distinguish between these possibilities. Zero-shot evaluation on previously unseen failure situations was suggested as a way to investigate this question. If the robot can recover in those situations without additional human corrections, that would provide evidence that its learned behavior generalizes beyond the corrections seen during training.
 
-2. **Q: Is fine tuning a separate step from the live correction process? How?**
+2. **Q: In YAY Robot, is fine tuning a separate step from the live correction process? How?**
 
    **A (class discussion):** Yes. Live corrections are collected while the robot performs the task, and those corrections are then used in a separate fine-tuning step to improve the high level policy. The updated policy can then apply what it learned in future runs without requiring live human intervention.
 
-
-### Language Model Predictive Control Questions
-
-<!-- Add questions and answers from the class discussion here. -->
-
-### General Discussion
-
-1. **Q: What additional forms of human input could complement language instructions to help the robot understand more complex corrections?**
+3. **Q: What additional forms of human input could complement language instructions to help the robot understand more complex corrections?**
 
    **Discussion:** One suggestion from the class was to combine language instructions with human gestures captured through vision. For example, pointing could help indicate the direction in which the robot should move or identify the object a person is referring to. Combining verbal instructions with these visual cues could make directions clearer and provide a richer interface for more complex human instructions.
-
-<!-- Add further general discussion questions as numbered entries above. -->
