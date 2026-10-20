@@ -291,7 +291,19 @@ One limitation of LMPC is its high computational cost, since fine-tuning the lan
 LMPC also depends on successful teaching interactions for training, which makes it difficult to improve on tasks the base model cannot solve. To add onto this, the system only models language feedback, without incorporating gestures or other forms of human communication.
 
 One important thing to note as well is that repeated fine-tuning did not improve performance either, with a second round decreasing success by 1.9 percentage points on test tasks. Most evaluations were also conducted in simulation, limiting conclusions about real-world generalization. Ultimately, LMPC shows that learning from human feedback improves robot adaptability, but computational cost and training data requirements remain significant challenges.
+
 ## Comparison and Synthesis
+Although both papers improve robot behavior through natural-language feedback, they operate at different levels of the control stack and optimize different aspects of interaction.
+
+| Dimension          | YAY Robot                                                                                    | Language Model Predictive Control                                                          |
+|:-------------------|:---------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------|
+| What is corrected? | Selection of a language-conditioned physical skill or recovery instruction                   | LLM-generated robot program in a multi-turn teaching conversation                          |
+| Human feedback     | Spoken intervention while a robot executes a task                                            | Natural-language instructions and corrective follow-ups after observing generated behavior |
+| Fast adaptation    | A human instruction temporarily overrides the high-level policy                              | New dialogue context changes the next generated code response                              |
+| Slow adaptation    | Fine-tuning the high-level instruction selector on saved corrections                         | Fine-tuning the code-writing LLM on successful or informative teaching trajectories        |
+| Learned component  | High-level policy; low-level ACT motor controller stays frozen during correction fine-tuning | Code-generating LLM; LMPC-Rollouts additionally predicts dialogue continuations            |
+| Primary objective  | Improve execution and recovery success for multi-step manipulation                           | Improve task success and reduce human correction turns (teachability)                      |
+| Key limitation     | Cannot execute recovery skills absent from the low-level repertoire                          | Predicted interactions can be inaccurate and inference can be computationally costly       |
 
 ## Discussion
 
