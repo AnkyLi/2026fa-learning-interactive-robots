@@ -233,6 +233,53 @@ The authors distinguish two adaptation timescales. **Fast adaptation** happens o
 
 ### Language Model Predictive Control: Method and Formulation
 
+#### Human–Robot Dialogue as a Sequential Decision Problem
+
+A teaching session begins with a system prompt $$P$$ describing the robot's capabilities and code interface. At dialogue turn $$t$$, the human provides language $$h_t$$, and the LLM returns executable robot code $$c_t$$. The code is evaluated through execution or simulation, after which the human may give another instruction or declare success. A session can therefore be represented schematically as
+
+$$
+\tau = (P,h_0,c_0,h_1,c_1,\ldots,h_T,c_T,r),
+$$
+
+where $$r$$ indicates the final task outcome. In the authors' partially observable Markov decision process (POMDP) interpretation, **human language is an observation** and **robot code is an action**. The hidden state includes aspects of the user's intended behavior and the execution outcome not fully described by the messages. The model observes conversation history rather than the entire physical state.
+
+The practical objective is to choose the next code response that leads to a successful session in as few additional interactions as possible. A convenient conceptual expression of this goal (not a verbatim equation from the paper) is
+
+$$
+ c_t^* \approx \underset{c_t}{\arg\max}\;\Pr\bigl(\text{task success within the remaining feedback budget}\mid P,h_{0:t},c_{0:t-1},c_t\bigr).
+$$
+
+The key distinction is that a good next code response need not merely resemble the next response in an existing dialogue; it should improve the likely *future teaching outcome*.
+
+#### LMPC-Rollouts: Predicting Future Teaching Interactions
+
+The teaching interface shown in lecture slide 20 has the LLM generate **reward code**, which is passed to the robot controller to produce behavior that the user then evaluates. Thus, the code in the dialogue is not simply a low-level motor action; it specifies a programmatic target for the controller.
+
+The **LMPC-Rollouts** approach fine-tunes an LLM on collected human–robot interactions so it can continue a partially observed conversation, including likely future human feedback and subsequent code responses. This gives the LLM the role of a learned interaction-dynamics model. At inference time, the controller considers possible code responses, generates imagined future dialogue continuations, and uses their predicted outcomes to choose a promising next response.
+
+The lecture presentation summarizes the inference rule particularly concretely: sample hypothetical conversations from the current history, select the **shortest completed rollout** indicating predicted success, return its **first code response**, and then repeat the process after receiving *actual* feedback. This is a heuristic based on the model's simulated completions, not a guarantee of shortest real-world teaching time.
+
+The process follows the receding-horizon principle of **model predictive control**:
+
+1. Observe the actual human instruction and the current chat history.
+2. Consider candidate next robot-code outputs and predict potential follow-up feedback and revisions.
+3. Prefer a candidate whose predicted continuation reaches success with fewer additional interactions.
+4. Execute or present only the **next** selected code response, obtain real human feedback, and replan using the updated history.
+
+For example, a user may ask a robot dog to adopt a pose. A proposed program might place its body too high. A rollout can represent a possible correction such as "lower the body" and the resulting code revision. By evaluating candidate continuations, the model seeks an initial or revised program that makes reaching the desired pose easier. These predictions are **hypotheses about a future interaction**, not guarantees that a human will provide the predicted feedback.
+
+#### LMPC-Skip: Learning to Jump Directly to Successful Code
+
+**LMPC-Skip** offers a more direct alternative: rather than simulate a sequence of future corrections during selection, the model is trained to predict a later successful code response from an earlier dialogue prefix. In effect, it learns to skip intermediate revisions in successful teaching trajectories. This can strengthen the first response because it directly imitates the successful endpoint, but it models the intervening feedback process less explicitly.
+
+The distinction explains an important experimental tradeoff: **Skip** can be strong at producing a useful first program, while **Rollouts** better targets adaptation over multiple correction turns. Neither method eliminates the need for real human feedback; both use previous teaching examples to improve future responses.
+
+#### Learning from Successful Users and Measuring Teachability
+
+Teaching trajectories differ greatly in quality. Some users communicate corrections efficiently, while others require more iterations or provide ambiguous instructions. The paper explores **top-user conditioning**, which allows the model to learn from a broad range of users while favoring interaction patterns associated with more successful teaching. The experiments test the value of this conditioning through ablations, rather than assuming that more data or only expert-like demonstrations will always be better.
+
+The core metric is **teachability**: both whether a task can eventually be completed and how much conversational feedback is required. This motivates reporting task success across different limits on the number of chat turns, rather than treating one-shot accuracy as sufficient. In the paper's reported unseen-task evaluation, feedback-aware training also reduced average human corrections from approximately **2.4 to 1.9**.
+
 ### Language Model Predictive Control: Experiments and Results
 The authors evaluated LMPC on 78 tasks across five robot embodiments in simulation, with additional tests on two real robots. They collected feedback from 35 non-expert users, who could give up to seven rounds of feedback per session. The evaluation measured task success, the number of chat turns needed for success, and how well the models responded to corrections.
 
