@@ -40,6 +40,11 @@ toc:
 ---
 
 ## Introduction
+Feedback is central to interactive robot learning because a robot's first attempt at a task is often imperfect. Even a capable robot may misinterpret a human instruction, encounter an unexpected object configuration, or execute a motion that requires adjustment. A useful interactive system must therefore do more than follow an initial command: it must interpret corrections, modify its behavior, and ideally become easier to teach through experience.
+
+This lecture examines two approaches to that problem. Yell At Your Robot (YAY Robot) uses human verbal interventions to override high-level skill selection during robot execution, then fine-tunes the high-level policy so that it can independently choose appropriate corrections in the future. Learning to Learn Faster from Human Feedback with Language Model Predictive Control (LMPC) studies a different interaction loop: a human gives natural-language feedback to a code-generating language model, which learns to produce robot programs that require fewer subsequent corrections. Whereas YAY Robot learns which physical skill or recovery instruction to invoke, LMPC learns how to respond to conversational teaching and select an effective next program.
+
+Together, the papers illustrate two complementary meanings of learning from feedback. Within an interaction, human input can immediately change the robot's next behavior. Across interactions, recorded corrections can be used to update a learned model, making future interactions more successful. The following sections explain each method, discuss its empirical evidence and limitations, and consider what it would take to combine adaptive planning with reliable physical recovery.
 
 ## Yell At Your Robot: Improving On-the-Fly from Language Corrections
 
