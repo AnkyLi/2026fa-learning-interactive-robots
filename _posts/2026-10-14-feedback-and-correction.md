@@ -10,10 +10,20 @@ ready: true
 # Reporter team authors
 authors:
   - name: "Jinyoon Kim"
+    affiliations:
+      - name: "University of Virginia"
   - name: "Austin Song"
+    affiliations:
+      - name: "University of Virginia"
   - name: "Boyang Yan"
+    affiliations:
+      - name: "University of Virginia"
   - name: "Sai Tarra"
+    affiliations:
+      - name: "University of Virginia"
   - name: "Harris Ilyas"
+    affiliations:
+      - name: "University of Virginia"
 
 bibliography: 2026-10-14-feedback-and-correction.bib
 
@@ -34,6 +44,8 @@ toc:
   - name: "Comparison and Synthesis"
   - name: "Discussion"
 ---
+
+*Author affiliation (all authors): University of Virginia.*
 
 ## Introduction
 Feedback is central to interactive robot learning because a robot's first attempt at a task is often imperfect. Even a capable robot may misinterpret a human instruction, encounter an unexpected object configuration, or execute a motion that requires adjustment. A useful interactive system must therefore do more than follow an initial command: it must interpret corrections, modify its behavior, and ideally become easier to teach through experience.
