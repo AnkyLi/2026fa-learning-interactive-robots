@@ -5,7 +5,7 @@ description: "Interactive policy learning through human interventions, correctiv
 date: 2026-10-14
 future: true
 htmlwidgets: true
-ready: false
+ready: true
 
 # Reporter team authors
 authors:
@@ -156,9 +156,9 @@ Here, $$\mathcal D_{\mathrm{corr}}^{(i)}$$ contains the corrections collected in
 
 **The low-level controller remains frozen throughout post-training.** A correction example therefore needs the observations and the human instruction, without an additional teleoperated motor-action demonstration. The system learns when to invoke existing skills and corrections; learning a new physical skill would require improving the low-level controller as well. This distinction explains how verbal feedback can improve autonomous behavior while keeping the underlying motor skills fixed. <d-cite key="shi2024yell"></d-cite>
 
-### Yell At Your Robot: Experiments and Results <d-cite key="shi2024yell"></d-cite>
+### Yell At Your Robot: Experiments and Results
 
-The authors tested YAY Robot on three tasks: putting a Sharpie, tape holder, and sponge into a Ziploc bag; making trail mix; and cleaning gummy bears off a plate with a sponge. These tasks are difficult because small mistakes can build up over several steps. They ran 20 trials for each evaluation and measured success on both individual steps and the full task.
+The authors tested YAY Robot on three tasks: putting a Sharpie, tape holder, and sponge into a Ziploc bag; making trail mix; and cleaning gummy bears off a plate with a sponge. These tasks are difficult because small mistakes can build up over several steps. They ran 20 trials for each evaluation and measured success on both individual steps and the full task. <d-cite key="shi2024yell"></d-cite>
 
 They compared three versions: the Base Policy, which worked without extra help; YAY Robot + Oracle Corrections, where a person could give spoken corrections while the robot worked; and YAY Robot After Finetuning, which learned from those corrections and was then tested without further help. The low level controller stayed the same, so the robot learned when to choose instructions it already knew how to follow rather than learning new movements.
 
@@ -213,9 +213,9 @@ The authors also compared YAY Robot with other ways of choosing instructions. It
    avoid_scaling=true
 %}
 
-### Yell At Your Robot: Limitations and Takeaways <d-cite key="shi2024yell"></d-cite>
+### Yell At Your Robot: Limitations and Takeaways
 
-YAY Robot can only follow a correction if its low level controller already knows how to carry out that instruction. Fine tuning helps it choose better instructions, but does not teach it entirely new movements. The results suggest that improving the robot's existing skills is still important.
+YAY Robot can only follow a correction if its low level controller already knows how to carry out that instruction. Fine tuning helps it choose better instructions, but does not teach it entirely new movements. The results suggest that improving the robot's existing skills is still important. <d-cite key="shi2024yell"></d-cite>
 
 The system also relies on spoken instructions and cannot easily understand pointing or gestures. The authors suggest that future systems could combine speech with these other ways of communicating. Their GPT-4V results also show that a general vision language model may misunderstand object positions or what is happening during a task.
 
@@ -229,7 +229,7 @@ A general-purpose robot may be controlled by a large language model (LLM) that t
 
 The paper asks how a code-writing LLM can become more **teachable**: how successfully and efficiently can a non-expert bring it to a desired robot behavior through a limited number of conversational corrections? This is distinct from measuring whether the first code sample works. An initially incorrect output may still be useful if the model understands feedback and quickly produces a successful revision. Conversely, a system that repeatedly makes similar mistakes imposes a large teaching burden even if it occasionally succeeds.
 
-The authors distinguish two adaptation timescales. **Fast adaptation** happens online as the LLM conditions on the current chat and generates revised code. **Slow adaptation** happens offline, when interactions from earlier teaching sessions are used to fine-tune the LLM. The proposed Language Model Predictive Control (LMPC) connects these two: it uses previously observed teaching trajectories to learn about future dialogue and searches for next responses likely to reach task success with fewer corrections. Unlike conventional MPC, which normally predicts physical state evolution under control inputs, LMPC applies predictive control to the *human–LLM interaction sequence*.
+The authors distinguish two adaptation timescales. **Fast adaptation** happens online as the LLM conditions on the current chat and generates revised code. **Slow adaptation** happens offline, when interactions from earlier teaching sessions are used to fine-tune the LLM. The proposed Language Model Predictive Control (LMPC) connects these two: it uses previously observed teaching trajectories to learn about future dialogue and searches for next responses likely to reach task success with fewer corrections. Unlike conventional MPC, which normally predicts physical state evolution under control inputs, LMPC applies predictive control to the *human–LLM interaction sequence*. <d-cite key="liang2024learning"></d-cite>
 
 ### Language Model Predictive Control: Method and Formulation
 
@@ -241,7 +241,7 @@ $$
 \tau = (P,h_0,c_0,h_1,c_1,\ldots,h_T,c_T,r),
 $$
 
-where $$r$$ indicates the final task outcome. In the authors' partially observable Markov decision process (POMDP) interpretation, **human language is an observation** and **robot code is an action**. The hidden state includes aspects of the user's intended behavior and the execution outcome not fully described by the messages. The model observes conversation history rather than the entire physical state.
+where $$r$$ indicates the final task outcome. In the authors' partially observable Markov decision process (POMDP) interpretation, **human language is an observation** and **robot code is an action**. The hidden state includes aspects of the user's intended behavior and the execution outcome not fully described by the messages. The model observes conversation history rather than the entire physical state. <d-cite key="liang2024learning"></d-cite>
 
 The practical objective is to choose the next code response that leads to a successful session in as few additional interactions as possible. A convenient conceptual expression of this goal (not a verbatim equation from the paper) is
 
@@ -255,7 +255,7 @@ The key distinction is that a good next code response need not merely resemble t
 
 The teaching interface shown in lecture slide 20 has the LLM generate **reward code**, which is passed to the robot controller to produce behavior that the user then evaluates. Thus, the code in the dialogue is not simply a low-level motor action; it specifies a programmatic target for the controller.
 
-The **LMPC-Rollouts** approach fine-tunes an LLM on collected human–robot interactions so it can continue a partially observed conversation, including likely future human feedback and subsequent code responses. This gives the LLM the role of a learned interaction-dynamics model. At inference time, the controller considers possible code responses, generates imagined future dialogue continuations, and uses their predicted outcomes to choose a promising next response.
+The **LMPC-Rollouts** approach fine-tunes an LLM on collected human–robot interactions so it can continue a partially observed conversation, including likely future human feedback and subsequent code responses. This gives the LLM the role of a learned interaction-dynamics model. At inference time, the controller considers possible code responses, generates imagined future dialogue continuations, and uses their predicted outcomes to choose a promising next response. <d-cite key="liang2024learning"></d-cite>
 
 The lecture presentation summarizes the inference rule particularly concretely: sample hypothetical conversations from the current history, select the **shortest completed rollout** indicating predicted success, return its **first code response**, and then repeat the process after receiving *actual* feedback. This is a heuristic based on the model's simulated completions, not a guarantee of shortest real-world teaching time.
 
@@ -272,18 +272,18 @@ For example, a user may ask a robot dog to adopt a pose. A proposed program migh
 
 **LMPC-Skip** offers a more direct alternative: rather than simulate a sequence of future corrections during selection, the model is trained to predict a later successful code response from an earlier dialogue prefix. In effect, it learns to skip intermediate revisions in successful teaching trajectories. This can strengthen the first response because it directly imitates the successful endpoint, but it models the intervening feedback process less explicitly.
 
-The distinction explains an important experimental tradeoff: **Skip** can be strong at producing a useful first program, while **Rollouts** better targets adaptation over multiple correction turns. Neither method eliminates the need for real human feedback; both use previous teaching examples to improve future responses.
+The distinction explains an important experimental tradeoff: **Skip** can be strong at producing a useful first program, while **Rollouts** better targets adaptation over multiple correction turns. Neither method eliminates the need for real human feedback; both use previous teaching examples to improve future responses. <d-cite key="liang2024learning"></d-cite>
 
 #### Learning from Successful Users and Measuring Teachability
 
 Teaching trajectories differ greatly in quality. Some users communicate corrections efficiently, while others require more iterations or provide ambiguous instructions. The paper explores **top-user conditioning**, which allows the model to learn from a broad range of users while favoring interaction patterns associated with more successful teaching. The experiments test the value of this conditioning through ablations, rather than assuming that more data or only expert-like demonstrations will always be better.
 
-The core metric is **teachability**: both whether a task can eventually be completed and how much conversational feedback is required. This motivates reporting task success across different limits on the number of chat turns, rather than treating one-shot accuracy as sufficient. In the paper's reported unseen-task evaluation, feedback-aware training also reduced average human corrections from approximately **2.4 to 1.9**.
+The core metric is **teachability**: both whether a task can eventually be completed and how much conversational feedback is required. This motivates reporting task success across different limits on the number of chat turns, rather than treating one-shot accuracy as sufficient. In the paper's reported unseen-task evaluation, feedback-aware training also reduced average human corrections from approximately **2.4 to 1.9**. <d-cite key="liang2024learning"></d-cite>
 
 ### Language Model Predictive Control: Experiments and Results
 The authors evaluated LMPC on 78 tasks across five robot embodiments in simulation, with additional tests on two real robots. They collected feedback from 35 non-expert users, who could give up to seven rounds of feedback per session. The evaluation measured task success, the number of chat turns needed for success, and how well the models responded to corrections.
 
-They compared PaLM 2-S, a retrieval-augmented generation (RAG) baseline, LMPC-Skip, and LMPC-Rollouts. Figure 4 plots how success changes as users are allowed more chat turns. On unseen tasks, LMPC-Rollouts reached 66.3% success compared with 39.4% for PaLM 2-S, a 26.9 percentage-point improvement.
+They compared PaLM 2-S, a retrieval-augmented generation (RAG) baseline, LMPC-Skip, and LMPC-Rollouts. Figure 4 plots how success changes as users are allowed more chat turns. On unseen tasks, LMPC-Rollouts reached 66.3% success compared with 39.4% for PaLM 2-S, a 26.9 percentage-point improvement. <d-cite key="liang2024learning"></d-cite>
 
 {% include figure.liquid
 path="assets/img/2026-10-14-feedback-and-correction/lmpc-figure-4-teachability.png"
@@ -294,7 +294,7 @@ zoomable=true
 avoid_scaling=true
 %}
 
-Table I shows a tradeoff between the two fine-tuned methods. LMPC-Skip did better on the first instruction (41.7% versus 34.8% on test tasks), but LMPC-Rollouts had more successes after corrective feedback (31.5% versus 17.8%). The authors suggest using Skip initially and Rollouts for later corrections.
+Table I shows a tradeoff between the two fine-tuned methods. LMPC-Skip did better on the first instruction (41.7% versus 34.8% on test tasks), but LMPC-Rollouts had more successes after corrective feedback (31.5% versus 17.8%). The authors suggest using Skip initially and Rollouts for later corrections. <d-cite key="liang2024learning"></d-cite>
 
 {% include figure.liquid
 path="assets/img/2026-10-14-feedback-and-correction/lmpc-table-1-results.png"
@@ -305,7 +305,7 @@ zoomable=true
 avoid_scaling=true
 %}
 
-The authors also tested top-user conditioning. Table II shows that removing it lowered performance, while training only on the top users was also insufficient. This suggests the model benefits from diverse teaching examples while being guided toward more effective feedback styles.
+The authors also tested top-user conditioning. Table II shows that removing it lowered performance, while training only on the top users was also insufficient. This suggests the model benefits from diverse teaching examples while being guided toward more effective feedback styles. <d-cite key="liang2024learning"></d-cite>
 
 {% include figure.liquid
 path="assets/img/2026-10-14-feedback-and-correction/lmpc-table-2-top-user-conditioning.png"
@@ -316,7 +316,7 @@ zoomable=true
 avoid_scaling=true
 %}
 
-To test generalization, the authors trained on Robot Dog, Mobile Manipulator, and ALOHA, then evaluated on two unseen KUKA embodiments. LMPC-Rollouts improved success by 31.5 percentage points over PaLM 2-S on these new robots, even though their APIs and tasks differed from those seen during training.
+To test generalization, the authors trained on Robot Dog, Mobile Manipulator, and ALOHA, then evaluated on two unseen KUKA embodiments. LMPC-Rollouts improved success by 31.5 percentage points over PaLM 2-S on these new robots, even though their APIs and tasks differed from those seen during training. <d-cite key="liang2024learning"></d-cite>
 
 {% include figure.liquid
 path="assets/img/2026-10-14-feedback-and-correction/lmpc-table-4-cross-embodiment.png"
@@ -327,7 +327,7 @@ zoomable=true
 avoid_scaling=true
 %}
 
-Finally, the simulation-trained model was evaluated on real Robot Dog and Mobile Manipulator tasks, shown in Figure 5. Average task success increased from 53.8% to 75%, although the average number of chat turns did not decrease. These results suggest the learned feedback strategy can transfer to real robots, but greater success does not always mean fewer corrections.
+Finally, the simulation-trained model was evaluated on real Robot Dog and Mobile Manipulator tasks, shown in Figure 5. Average task success increased from 53.8% to 75%, although the average number of chat turns did not decrease. These results suggest the learned feedback strategy can transfer to real robots, but greater success does not always mean fewer corrections. <d-cite key="liang2024learning"></d-cite>
 
 {% include figure.liquid
 path="assets/img/2026-10-14-feedback-and-correction/lmpc-figure-5-real-robot-tasks.png"
@@ -342,10 +342,10 @@ One limitation of LMPC is its high computational cost, since fine-tuning the lan
 
 LMPC also depends on successful teaching interactions for training, which makes it difficult to improve on tasks the base model cannot solve. To add onto this, the system only models language feedback, without incorporating gestures or other forms of human communication.
 
-One important thing to note as well is that repeated fine-tuning did not improve performance either, with a second round decreasing success by 1.9 percentage points on test tasks. Most evaluations were also conducted in simulation, limiting conclusions about real-world generalization. Ultimately, LMPC shows that learning from human feedback improves robot adaptability, but computational cost and training data requirements remain significant challenges.
+One important thing to note as well is that repeated fine-tuning did not improve performance either, with a second round decreasing success by 1.9 percentage points on test tasks. Most evaluations were also conducted in simulation, limiting conclusions about real-world generalization. Ultimately, LMPC shows that learning from human feedback improves robot adaptability, but computational cost and training data requirements remain significant challenges. <d-cite key="liang2024learning"></d-cite>
 
 ## Comparison and Synthesis
-Although both papers improve robot behavior through natural-language feedback, they operate at different levels of the control stack and optimize different aspects of interaction.
+Although both papers improve robot behavior through natural-language feedback, they operate at different levels of the control stack and optimize different aspects of interaction. <d-cite key="shi2024yell,liang2024learning"></d-cite>
 
 | Dimension          | YAY Robot                                                                                    | Language Model Predictive Control                                                          |
 |:-------------------|:---------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------|
