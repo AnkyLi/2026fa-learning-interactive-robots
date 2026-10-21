@@ -88,6 +88,8 @@ The LLM is good at debugging, so showing it the previous code and the transition
 
 ### Sokoban
 
+{% include figure.liquid path="assets/img/2026-10-12-policy-world-model-code-generation/SokobanResults.png" class="img-fluid rounded z-depth-1"%}
+
 - The agent builds a working model from its first ~50 actions and generalizes from 2-box to 3-box levels.
 - ReAct solves only ~15% of basic levels, and deep RL needs over 1M steps for 2-box levels.
 - WorldCoder needs about 400k tokens at the start, then no more LLM calls.
@@ -96,6 +98,8 @@ The LLM is good at debugging, so showing it the previous code and the transition
 
 ### Minigrid
 
+{% include figure.liquid path="assets/img/2026-10-12-policy-world-model-code-generation/MinigridResults.png" class="img-fluid rounded z-depth-1"%}
+
 - The environments test different kinds of transfer: empty, door/key, unlock, fetch, and unlock-pickup.
 - Transfer speeds up learning.
 - Optimism helps more here and lets WorldCoder solve the harder environments.
@@ -103,6 +107,7 @@ The LLM is good at debugging, so showing it the previous code and the transition
 - PPO needs 10⁴–10⁵ steps on easy levels and fails UnlockPickup even after 3×10⁸ steps.
 
 ### AlfWorld
+{% include figure.liquid path="assets/img/2026-10-12-policy-world-model-code-generation/AlfWorldResults.png" class="img-fluid rounded z-depth-1"%}
 
 - A household robot planning domain.
 - Uses MCTS with a BM25 text-similarity heuristic to handle sparse reward and long horizons.
