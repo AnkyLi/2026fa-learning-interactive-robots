@@ -5,6 +5,9 @@ description: "Interactive policy learning through human interventions, correctiv
 date: 2026-10-14
 future: true
 htmlwidgets: true
+_styles: >
+  .yay-walkthrough { height: 850px; }
+  @media (max-width: 600px) { .yay-walkthrough { height: 1160px; } }
 ready: true
 
 # Reporter team authors
@@ -76,6 +79,21 @@ Yell At Your Robot (YAY Robot) uses **human language corrections as supervision 
 %}
 
 The overview shows how observations, instructions, and actions connect. Camera images inform the high-level policy, which selects a language command. The low-level policy combines that command with its observations to produce joint targets. The human intervention joins the language pathway, so a correction changes the instruction passed to the controller. The orange arrow shows how recorded language feedback later updates the high-level policy; the snowflake marks the low-level policy as frozen during this phase. These two pathways correspond to the intervention rule and post-training update explained below. <d-cite key="shi2024yell"></d-cite>
+
+#### Interactive Walkthrough: From Correction to Learning
+
+Select a stage below to trace the difference between changing an instruction during execution and updating the high-level policy afterward. The walkthrough uses the overview figure above and an illustrative bag-insertion example. <d-cite key="shi2024yell"></d-cite>
+
+<iframe
+  src="{{ 'assets/html/2026-10-14-feedback-and-correction/yay-robot-correction-walkthrough.html' | relative_url }}"
+  class="yay-walkthrough"
+  title="YAY Robot interactive walkthrough: autonomous execution, human correction, and later fine-tuning"
+  width="100%"
+  height="850"
+  loading="lazy"
+  sandbox="allow-popups allow-popups-to-escape-sandbox"
+  style="border: 1px solid #d3dce7; border-radius: 10px;"
+></iframe>
 
 #### Two Policies Connected by Language
 
