@@ -20,16 +20,20 @@ toc:
   - name: "Introduction"
   - name: "ProgPrompt"
     subsections:
-      - name: "Classical & LLM Planners"
+      - name: "Classical and LLM Planners"
       - name: "The Grounding Gap"
       - name: "Problem Formulation"
       - name: "Method"
       - name: "Evaluation"
-        subsections:
-          - name: "Simulation"
-          - name: "Real-World Experiments"
       - name: "Discussion"
   - name: "WorldCoder"
+    subsections:
+      - name: "Background"
+      - name: "Contextual MDP"
+      - name: "Constraints"
+      - name: "Pipeline"
+      - name: "Experiments"
+      - name: "Conclusion"
   - name: "Applications and Limitations"
     subsections:
       - name: "Applications"
@@ -59,11 +63,11 @@ This lecture explores two different approaches to address the challenges:
 
 ## ProgPrompt {#progprompt}
 
-**Motivation**: Household tasks require both commonsense world understanding as well as situated knowledge of the current environment. LLMs know a lot about the world, and the question becomes how to leverage this understanding in an embodied robot. 
+**Motivation**: Household tasks require both commonsense world understanding as well as situated knowledge of the current environment. LLMs know a lot about the world, and the question becomes how to leverage this understanding in an embodied robot.
 
-**ProgPrompt's** key idea is to introduce situated-awareness in LLM-based robot task planning by framing it as Python program generation. The LLM is promped with pythonic code form specifications of actions, objects, and examples, and it completes the program for a new task.
+**ProgPrompt's** key idea is to introduce situated-awareness in LLM-based robot task planning by framing it as Python program generation. The LLM is prompted with pythonic code form specifications of actions, objects, and examples, and it completes the program for a new task.
 
-### Classical & LLM Planners
+### Classical and LLM Planners
 
 **Classical Task Planning**: Task planning traditionally relies on symbolic search (e.g. PDDL, STRIPS) over predefined domain models, but it struggles to scale in open-world environments.
 
@@ -75,7 +79,7 @@ This lecture explores two different approaches to address the challenges:
 
 **API Mismatch**: The LLM proposes actions that the robot cannot physically perform.
 
-**Object Hallucination**: The LLM referencse objects not in the current room.
+**Object Hallucination**: The LLM references objects not in the current room.
 
 **No State Feedback**: The open-loop plan generation cannot adapt when a precondition fails.
 
@@ -92,8 +96,7 @@ $$
 - $$A$$: set of executable actions, which depends on the current state $$s \in S$$
 - $$T$$: transition model $$T: S \times A \rightarrow S$$
 - $$I, G$$: initial and goal states
-- $$t$$: high-level task description 
-
+- $$t$$: high-level task description
 
 ### Method
 
@@ -113,6 +116,7 @@ Robot plans are represented as Pythonic programs. The prompt is structured as Py
 **Prompt Design**
 
 The prompt is written as a Python file with 4 parts:
+
 1. Action Primitives as Imports
 2. Available Objects List
 3. Example Tasks
@@ -126,6 +130,7 @@ caption="Pythonic ProgPrompt plan for put salmon in the microwave."
 %}
 
 Generated plan functions, as shown in the figure, contain the following key components:
+
 - **API calls** to action primitives with objects as arguments
 - **NL comments** to break down tasks, focus on immediate goals, and reduce repetitive output. This process encourages and mimics "chain of thought" style reasoning and prompting.
 - **Assertions with recovery actions**, which check preconditions before acting and fix the state when a check fails.
@@ -146,6 +151,7 @@ The authors evaluated ProgPrompt across virtual simulation and real-world experi
 <!-- , with the action space $$A=\{\text{grab, putin, putback, walk, find, open, close, switchon, switchoff, sit, standup}\}$$. They experiment with 3 environments, each with 115 unique object instances, and create a dataset of 70 tasks. Each result is averaged over 5 runs across 10 tasks. -->
 
 **Simulation Process**:
+
 1. Simulator extracts the scene state.
 2. ProgPrompt builds the LLM Prompt.
 3. The LLM process the prompt and outputs the completed function.
@@ -160,7 +166,7 @@ class="img-fluid rounded z-depth-1"
 - ProgPrompt w/ GPT-3 outperformed the zero-shot planner baseline and LangPrompt on every metric.
 - Codex achieved the highest overall performance since it was explicitly trained on programming language code.
 - Davinci underperformed relative to GPT-3 likely due to prompt length constraints limiting task example quantity.
-- Removing comments reduced performace across all metrics
+- Removing comments reduced performance across all metrics
 - Including assertion checks and recovery steps improved performance.
 
 {% include figure.liquid path="assets/img/2026-10-12-policy-world-model-code-generation/r2-p1-simtable-tasks.png"
@@ -183,6 +189,7 @@ class="img-fluid rounded z-depth-1"
 **Experiment Setup**: A Franka-Emika Panda robot with a parallel jaw gripper was used to perform pick-and-place operations.
 
 **Experiment Process**:
+
 1. VLID detects items in the environment.
 2. ProgPrompt builds the LLM Prompt.
 3. The LLM process the prompt and outputs the completed function.
@@ -202,9 +209,8 @@ caption="Robot plan execution rollout example on a sorting task."
 class="img-fluid rounded z-depth-1"
 %}
 
-- The only failures occured on the sorting task.
+- The only failures occurred on the sorting task.
 - Failure causes included distractors as well as an unexpected gripper failure.
-
 
 ### Discussion
 
@@ -215,15 +221,14 @@ class="img-fluid rounded z-depth-1"
 ---
 
 ## WorldCoder {#worldcoder}
-# WorldCoder: Summary
 
 WorldCoder uses an LLM to generate a world model in the form of Python code, then uses that world model to create a plan.
 
-## Background
+### Background
 
 People can pick up a new game or device in a handful of tries. We have strong priors from similar things we've seen and are exceptionally good at transferring skills to new goals. This is akin to learning a **world model**: a transition function that predicts the next state given the current state and an action. LLMs have a ton of knowledge about the world baked into their weights.
 
-### Limitations of existing approaches
+#### Limitations of existing approaches
 
 - **Deep model-based RL:** Has weak priors and high sample complexity. With no prior knowledge, it must try countless actions until something sticks, and the trained network is a black box that is difficult to inspect.
 - **LLM agents:** Have strong priors and don't need environment interaction to start, but they never update a world model. Each action also requires a separate LLM call, so cost grows with episode length.
@@ -231,7 +236,7 @@ People can pick up a new game or device in a handful of tries. We have strong pr
 
 LLMs know a lot about the world but can't efficiently search or plan. WorldCoder takes advantage of that knowledge without relying on the LLM for what it's bad at.
 
-## Contextual MDP
+### Contextual MDP
 
 A standard MDP has state, action, transition, and reward: ⟨S, A, T, R⟩. WorldCoder uses a **contextual MDP**, which has context, state, action, and model: ⟨C, S, A, M⟩. The context *c* is the natural-language goal, and M(c) gives an MDP for it. The transition function is shared across goals and doesn't depend on context, while the reward changes with the goal.
 
@@ -240,14 +245,14 @@ The LLM builds two Python programs:
 - **T̂**: the learned transition function
 - **R̂**: the learned reward model, which also returns a flag indicating whether the goal has been reached
 
-## Constraints
+### Constraints
 
 - **φ₁ (Consistency):** T̂ and R̂ must match everything the agent has seen in the past.
 - **φ₂ (Optimism):** The agent believes the goal is reachable, meaning there is a sequence of actions that reaches the goal with positive reward.
 
 When either constraint is violated, the world model is updated. Optimism drives exploration, and consistency acts as guardrails.
 
-## Pipeline
+### Pipeline
 
 1. Receive a natural-language goal *c* and record the initial state.
 2. At each step, if the model violates φ₁ or φ₂, call the LLM to refine the code.
@@ -256,9 +261,9 @@ When either constraint is violated, the world model is updated. Optimism drives 
 
 The LLM is good at debugging, so showing it the previous code and the transitions it fails to explain lets it generate a better function. Because a new world model can be built by editing the previous one, knowledge transfers across environments.
 
-## Experiments
+### Experiments
 
-### Sokoban
+#### Sokoban
 
 {% include figure.liquid path="assets/img/2026-10-12-policy-world-model-code-generation/SokobanResults.png" class="img-fluid rounded z-depth-1"%}
 
@@ -268,7 +273,7 @@ The LLM is good at debugging, so showing it the previous code and the transition
 - A teleportation variant shows it isn't just relying on memorized Sokoban solutions from the internet.
 - Optimism doesn't help much here because the reward is dense and random exploration finds it quickly.
 
-### Minigrid
+#### Minigrid
 
 {% include figure.liquid path="assets/img/2026-10-12-policy-world-model-code-generation/MinigridResults.png" class="img-fluid rounded z-depth-1"%}
 
@@ -278,7 +283,8 @@ The LLM is good at debugging, so showing it the previous code and the transition
 - Without optimism, it struggles to follow new instructions, so optimism also helps catch LLM mistakes.
 - PPO needs 10⁴–10⁵ steps on easy levels and fails UnlockPickup even after 3×10⁸ steps.
 
-### AlfWorld
+#### AlfWorld
+
 {% include figure.liquid path="assets/img/2026-10-12-policy-world-model-code-generation/AlfWorldResults.png" class="img-fluid rounded z-depth-1"%}
 
 - A household robot planning domain.
@@ -286,10 +292,10 @@ The LLM is good at debugging, so showing it the previous code and the transition
 - Solves the task in the first episode after around 20 exploratory steps, then makes small corrections in later episodes.
 - Optimism is necessary for any non-zero performance.
 
-## Conclusion
+### Conclusion
 
 WorldCoder shows that an LLM works best as a programmer of world models rather than as a planner or simulator. By writing its knowledge as code, the agent learns from far fewer interactions than deep RL, avoids the per-action LLM cost of ReAct-style agents, and ends up with a model that humans can read and edit. The optimism constraint (φ₂) is what makes exploration goal-directed, and it matters most in sparse-reward settings like Minigrid and AlfWorld. The main limitations are that it assumes deterministic dynamics and needs symbolic, discrete states, so extending it to noisy, perception-heavy environments is the natural next step.
-                
+
 ---
 
 ## Applications and Limitations {#applications-and-limitations}
@@ -297,6 +303,7 @@ WorldCoder shows that an LLM works best as a programmer of world models rather t
 Given the capabilities of ProgPrompt<d-cite key="singh_progprompt_2023"/> and WorldCoder<d-cite key="tang_worldcoder_2024"/> what are the current applications and limitations of these methods?
 
 ### Applications {#applications}
+
 Both ProgPrompt and WorldCoder exploit the coding capabilities of LLMs to gain access to its vast knowledge while also restricting the possibility of hallucinations. Forcing the model to write in code provides a structured syntax with automatic validation, as code is easier to validate than natural language. Thus, these methods would be especially beneficial for any kind of tasks that involve non-conventional robots or unfamiliar environments.
 
 LLMs are exceptionally good at generalization, recognizing and applying learned patterns to unseen tasks. However, this is also harmful if the LLM is used for more specialized tasks. In robotics, an LLM, without any constraints, may assume that the robot is a humanoid and give commands based on this assumption. But, if the robot is a robotic dog or even an aquatic robot, then the commands the model gives is not applicable. On the other hand, using the LLM via a code interface enables the model to only access commands the robot is able to execute, which gives ProgPrompt and WorldCoder the advantage over vanilla LLMs. These approaches can better manipulate the robot to complete the task. 
@@ -304,10 +311,12 @@ LLMs are exceptionally good at generalization, recognizing and applying learned 
 Another application is for unfamiliar tasks or environments (i.e., tasks or environments extremely different from those the LLM was trained on). In this scenario, the model's knowledge provides little benefit other than commonsense knowledge, meaning that it is possible that using the LLM for planning is closer to random. However, WorldCoder provides a simulated environment for the robot to learn a suitable policy, and ProgPrompt provides the executable actions the model can use to explore the environment and complete the task. For both approaches, having a code interface enables better adaptability of the robots to unseen environments. 
 
 ### Limitations {#limitations}
+
 Although code provides more structured syntax to restrict model output and prevent hallucinations, there are some key limitations of this type of approach.
-1. _Executability does not equate to better performance._ These approaches only provide an alternative communication interface (via code), but it does not necessarily translate to improved task performance. We can even argue that using these approaches increases the model capability requirements, as the model not only needs to understand code but also generate valid code that accomplishes the goal. Smaller language models might be suitable for natural language communication but fail to output valid code syntax. 
-2. _The possibility of hallucination is reduced, not eliminated._ Even if we restrict model output to only generate code, the model can still generate incomplete or incorrect code. The main benefit is that we can quickly filter out invalid code, such as using a compiler. However, there is also the chance that the model generates syntactically valid but semantically incorrect code, such as calling the wrong function or using the wrong variable.
-3. _The code interface requires more human setup._ Both methods require a code API to communicate with the robot, which could restrict the applicability of these methods. Furthermore, prior to using LLMs, a human annotator would need to design a prompt that enables the LLM to understand the code API and use it to generate commands. This type of approach requires a lot of effort to ensure compatibility between the robot and the LLM. 
+
+1. *Executability does not equate to better performance.* These approaches only provide an alternative communication interface (via code), but it does not necessarily translate to improved task performance. We can even argue that using these approaches increases the model capability requirements, as the model not only needs to understand code but also generate valid code that accomplishes the goal. Smaller language models might be suitable for natural language communication but fail to output valid code syntax.
+2. *The possibility of hallucination is reduced, not eliminated.* Even if we restrict model output to only generate code, the model can still generate incomplete or incorrect code. The main benefit is that we can quickly filter out invalid code, such as using a compiler. However, there is also the chance that the model generates syntactically valid but semantically incorrect code, such as calling the wrong function or using the wrong variable.
+3. *The code interface requires more human setup.* Both methods require a code API to communicate with the robot, which could restrict the applicability of these methods. Furthermore, prior to using LLMs, a human annotator would need to design a prompt that enables the LLM to understand the code API and use it to generate commands. This type of approach requires a lot of effort to ensure compatibility between the robot and the LLM.
 
 ---
 
@@ -315,7 +324,7 @@ Although code provides more structured syntax to restrict model output and preve
 
 This section provides common questions related to the presented topics. *If questions ask to take a side, we provide answers to support both sides.*
 
-### ProgPrompt Questions {#progpromt-questions}
+### ProgPrompt Questions {#progprompt-questions}
 
 Questions and answers related to ProgPrompt<d-cite key="singh_progprompt_2023"/>.
 
