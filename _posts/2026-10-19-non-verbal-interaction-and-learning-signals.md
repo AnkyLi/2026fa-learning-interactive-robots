@@ -5,7 +5,7 @@ description: "Implicit communication and learning signals: human gaze, head pose
 date: 2026-10-19
 future: true
 htmlwidgets: true
-ready: false
+ready: true
 
 # Reporter team authors
 authors:
@@ -16,6 +16,13 @@ bibliography: 2026-10-19-non-verbal-interaction-and-learning-signals.bib
 toc:
   - name: "Introduction"
   - name: "GIRAF"
+    subsections:
+      - name: "How GIRAF works"
+      - name: "Experimental Setup"
+      - name: "Experiments"
+      - name: "GIRAF Results"
+      - name: "Limitations"
+      - name: "Conclusions"
   - name: "GABRIL: Gaze-Based Regularization for Mitigating Causal Confusion in Imitation Learning"
     subsections:
       - name: "Background and Motivation"
@@ -35,6 +42,7 @@ toc:
   - name: "Conclusion"
   - name: "Discussion"
     subsections:
+      - name: "Questions About GIRAF"
       - name: "Questions about GABRIL"
       - name: "Questions relating to both papers"
   - name: "References"
@@ -44,7 +52,87 @@ toc:
 
 As discussed in class before, there is often a **language grounding problem** for robots. That is, what is the actual process of connecting abstract natural language words, phrases, or instructions to physical, tangible elements in the real world. Asking a robot to bring an object may not describe or portray what the object is for. This inherently stems from ambiguous or incomplete sentences or or commands. Another aspect lies in imitation learning, where the robot only learns and does a specific behavior, not why they are doing it. This concept was also described as **causal confusion**, where an agent mistakenly relies on correlation rather than the true cause. This is why **non-verbal cues** are so important. Humans especially constantly use gestures, gaze, and body language to support or replace speech. These cues are natural and low effort, while also giving greater context open for interpretation. The main goal of this lecture is to provide ways for an agent to try and understand what a human means via non-verbal interactions.
 
+### Real World Relevance
+
+There are many times that it can be difficult to clearly describe what you want to a robot. This can be due to the user not knowing the name of the specific tool they need, them not being fluent in the language or that they may find it easier to gesture where they want rather than explain. This can become an issue in real world scenarios such as in workplaces, offices or labs. In addition, robots can struggle to recognise less common items, so it can be impossible to communicate what they want through verbal descriptions. Using non-verbal information can be helpful when learning with demonstrations. When learning with demonstrations, a robot can copy a humans actions but may not understand why they are doing something. Knowing which objects or features are important will lead to better behaviour and can make the robots decision making easier to understand. These real world issues are what motivated the two papers.
+
+### Overview
+
+### GIRAF: Gesture-Informed Robot Assistance via Foundation Models
+
+This paper looks at the ambiguity that can occur when communicating with a robot. It covers how they combine verbal, gesture and scene information with a language model to understand what the user wants.
+
+### GABRIL: Gaze-Based Regularization for Mitigating Causal Confusion in Imitation Learning
+
+This paper looks at the ambiguity when learning from demonstrations. They use gaze information from the human whilst training to encourage the policy to focus on the relevant visual features. Whereas GIRAF uses gestures to get a clearer understanding of what the user wants, GABRIL uses gaze.
+
 # GIRAF
+
+GIRAF: Gesture-Informed Robot Assistance via Foundation Models
+
+### Background and Motivation
+
+When talking to robots we try to mimic how we would talk to a human. However, for this type of robot it doesn’t seem to work. Saying "can you pass me that" can be much clearer when using gestures. However, for a robot that can only understand verbal information, finding out what "that" refers to can be tricky. This means that when only using language it is assumed that the user can clearly describe what they want. Unfortunately this can be inconvenient when the user doesn’t know what the item is called, or wants a specific item out of a range of similar items, or if they are in an environment with specialised tools. Using gestures like pointing can help to understand what they want to be done. However, traditional gesture systems can suffer from having rigid gesture to command mapping which can limit how much meaning can change depending on the context. GIRAF tries to solve this by using a large language model to understand the gestures based on the verbal information and the information from the immediate environment. This will allow the robot to be more flexible when communicating but ensure the plan is grounded in the real world.
+
+### How GIRAF works
+
+{% include figure.liquid
+   path="assets/img/2026-10-19-non-verbal-interaction-and-learning-signals/giraf-pipeline.png"
+   class="img-fluid rounded z-depth-1"
+   caption="Figure G1: GIRAF combines speech, gestures, and scene information to identify objects and generate robot actions."
+%}
+
+<d-cite key="lin2023giraf"></d-cite>
+
+The scene descriptor helps identify the objects and their locations. This is done by first segmenting the objects using Segment Anything. Depth information is then used to convert the image coordinates to 3D positions. Lastly, OpenCLIP is used to match the images of the objects to the possible labels. This creates a grounded scene representation with object labels and their positions. The human descriptor understands the verbal and gesture information. The speech information is converted to text with timestamps to match the verbal instruction with the correct visual frame. MediaPipe is used to extract the hand features. These are then inputted to gesture recognition networks to predict the gesture classes. There are two different models used one for static gestures and one for dynamic gestures. This gives the language model structured information on what the user has said, how they have gestured and what objects are available. Next, the reasoning and grounding step. GIRAF uses GPT-3.5 to understand what the user wants and create the action code. However, to find the real world object, geometric reasoning is needed. The perception API is used to filter through the possible objects. Using the fingertip position and pointing direction, the correct object to interact with can be identified. For example, if the user points and asks for a tool, the verbal information will help understand what they want but the geometric information will help identify which tool.
+
+$$
+\bar{O}=\{(c_i,p_i)\in O\mid c_i\in C\}
+$$
+
+$$
+(c_{\mathrm{target}},p_{\mathrm{target}})=\underset{(c_i,p_i)\in\bar{O}}{\arg\min}\;D(p_i,r)
+$$
+
+Here, $O$ contains detected objects with class labels $c_i$ and 3D positions $p_i$. The candidate classes $C$ filter this set to $\bar{O}$. The pointing ray $r$ starts at the fingertip and follows the pointing direction; $D(p_i,r)$ measures the distance from an object's position to that ray. <d-cite key="lin2023giraf"></d-cite>
+
+## Experimental Setup
+
+GIRAF was tested using a user study, gesture instruct benchmark and examples of long interactions. The user study compared GIRAF to a language only baseline (Code as Policies) at performing tasks to open drawers and pick up tools. This helps to understand if using gestures helps to identify specific drawers or tools without precise description. This considers how well the robot performs the tasks and how well the user feels. The users rated how well they felt their instructions were understood, how easy it was to communicate, how trustworthy, how frustrating and how likely they would use the system again. The results also showed how well the robot understood the instruction and created a plan.
+
+## Experiments
+
+The user study found that using gestures made it easier to communicate with the robot. In the drawer opening task gestures helped to identify which drawer to open. In the tool picking up task it helped to identify which tool they wanted. This was especially useful for when the verbal information wasn’t enough. The authors created a benchmark called GestureInstruct which contains 36 scenarios to perform tasks using different gesture types. The gestures include pointing, gestures to indicate properties (e.g. distance), symbolic gestures and gestures with an agreed meaning. The experiment looked at how well the system performed when given gesture labels or descriptions. Examples of long interactions were shown to demonstrate how GIRAF can assist with more complex actions.
+
+## Results
+
+The user study found that users preferred using GIRAF over the language only baseline. GIRAF had a higher score for how easy to communicate with, how trustworthy and how likely they would use again. The users also felt less frustrated. GIRAF had a high success rate of 94% (before execution) and 85% (execution) at opening drawers. Whereas Code as Policies had a low success rate of 24%. GIRAF had a high success rate of 88% (before execution) and 52% (execution) at picking up tools. Whereas Code as Policies had a low success rate of 9%. This demonstrates how useful the gesture information was but shows that there is a issue with identifying the correct action and performing it.
+
+{% include figure.liquid
+   path="assets/img/2026-10-19-non-verbal-interaction-and-learning-signals/giraf-user-study.png"
+   class="img-fluid rounded z-depth-1"
+   caption="Figure G2: GIRAF improves user ratings and task success compared with CaP, though execution remains a challenge."
+%}
+
+<d-cite key="lin2023giraf"></d-cite>
+
+The results from GestureInstruct showed that overall there was an 81% success rate at finding the correct plan. However, the results varied depending on the gesture type and how they were represented. Overall, gesture labels performed better than gesture descriptions. This suggests that the way the gesture information is represented will affect how well the language model understands it. The results from the benchmark indicate how well the system can create a plan but should not be taken to mean that it can perform 81% of tasks.
+
+{% include figure.liquid
+   path="assets/img/2026-10-19-non-verbal-interaction-and-learning-signals/giraf-gestureinstruct.png"
+   class="img-fluid rounded z-depth-1"
+   caption="Figure G3: GestureInstruct examples and planning results. Gesture labels generally outperform descriptions."
+%}
+
+<d-cite key="lin2023giraf"></d-cite>
+
+## Limitations
+
+A limitation highlighted in the presentation was that there was no gesture aware rule based baseline. Whilst showing that gesture information is useful by comparing to a language only system, it does not show how much improvement is due to the LLM reasoning rather than the gesture. GIRAF relies on the perception components being accurate. If there are errors with the gesture recognition, object classification or 3D localisation then the robot may interact with the wrong object. The results also show that there is a problem with creating a plan and executing it. Whilst there are models for both static and dynamic gestures in the architecture, the experiments in the real world mainly focused on static gestures. The user studies were on a small scale and there were set scenarios for gestures. This limits how much evidence there is for generalising to unknown gestures, users and environments. An accessibility issue was also mentioned in class. Users with limited hand movement may not be able to perform the gestures.
+
+## Conclusions
+
+Overall, GIRAF shows how verbal, gesture and scene information can be combined to help a robot be more flexible with assisting. The main contribution is combining the LLM based understanding with geometric grounding. This allows the robot to reason what the user wants and find the correct objects in the real world. The experiments showed that GIRAF performed better than a language only system and the users felt better. However, accurate perception and execution are needed to provide reliable assistance. Another future direction to note is that clarity and accessibility were mentioned in class as important considerations as we move forward with this work.
 
 # GABRIL: Gaze-Based Regularization for Mitigating Causal Confusion in Imitation Learning
 
@@ -157,6 +245,28 @@ In conclusion, GABRIL demonstrates that human eye gaze can be used to reduce **c
 ## Discussion
 
 The following includes the discussion questions presented by the team, along with the class discussion that occurred during the presentation.
+
+### Questions About GIRAF
+
+
+
+**Generalization: How well can GIRAF generalize to unseen gestures, objects, and more complex real-world environments without predefined gesture labels?**
+
+Duc Anh identified larger datasets and techniques for improving generalization as possible directions. Another student brought up clarification, referring to the possibility of a robot asking whether it had identified the intended object.
+
+Professor Kuo encouraged thinking about this process more dynamically. The discussion also raised testing with different kinds of noise to examine robustness when moving from familiar to unfamiliar tasks. These were proposed directions rather than demonstrated solutions.
+
+**Hybrid LLM–Rule-Based Approach: Can a hybrid system combining reliable hard-coded geometric grounding with flexible LLM reasoning improve robustness, efficiency, and task success compared to purely rule-based or LLM-driven planning?**
+
+A discussion question asked whether combining reliable geometric rules with flexible LLM reasoning could improve robustness and efficiency. GIRAF already combines these components, but the question raised the broader issue of how to divide responsibility between them.
+
+Duc Anh also noted that LLM reasoning can be costly. Professor Kuo raised the connection to sign language and asked whether a robot should receive an inventory of gestures to recognize. The discussion did not establish a preferred design, but highlighted the trade-off between predictable recognition and flexible interpretation.
+
+**The gesture system used may not work for those with limited hand mobility or disabilities (which may be a group of users that need robots like this); Does non-verbal interaction make robots more or less inclusive?**
+
+The presentation raised a concern that users with limited hand mobility might struggle to produce the gestures the system expects. Gestures can reduce dependence on precise spoken descriptions, but they also introduce physical requirements.
+
+This question remained open. GIRAF’s results suggest that non-verbal input can make robot interaction easier, while the discussion emphasized that its usefulness depends on which users and forms of communication the system supports.
 
 ### Questions About GABRIL
 
