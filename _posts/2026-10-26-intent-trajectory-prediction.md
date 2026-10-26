@@ -50,7 +50,7 @@ $$
 X_i = \{(x_i^t, y_i^t)\}_{t=1}^{t_{\mathrm{obs}}}
 $$
 
-where $(x_i^,y_i^t)$is the position at time $t$. The model then predicts the future trajectory $\hat{Y}_i$ from $t_{obs}+1$ to $t_{pred}$.
+where $$(x_i^,y_i^t)$$ is the position at time $t$. The model then predicts the future trajectory $$\hat{Y}_i$$ from $$t_{obs}+1$$ to $$t_{pred}$$.
 
 The model consists of three main components: a Generator, a Pooling Module, and a Discriminator, as shown in Figure 1.
 
