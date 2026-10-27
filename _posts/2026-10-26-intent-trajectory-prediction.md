@@ -21,7 +21,6 @@ toc:
   - name: "Social GAN: Socially Acceptable Trajectories with Generative Adversarial Networks"
   - name: "Estimating Cognitive Biases with Attention-Aware Inverse Planning"
   - name: "Comparison and Discussion"
-  - name: "Conclusion"
   - name: "References"
 ---
 
@@ -29,9 +28,9 @@ toc:
 
 Predicting human intent and future trajectories is an important problem in human-robot interaction. When robots work in environments with people, they need to consider not only their own actions but also how people around them may behave. For example, a delivery robot moving through a crowded area needs to predict pedestrian movements to avoid collisions and navigate safely. However, human behavior is difficult to predict because people can have different goals, interact with each other, and make decisions based on incomplete information.
 
-This report discusses two papers that study human behavior prediction from different perspectives. The first paper, Social GAN: Socially Acceptable Trajectories with Generative Adversarial Networks, focuses on predicting multiple possible pedestrain trajectories by modeling social interactions. The second paper, Estimating Cognitive Biases with Attention-Aware Inverse Planning, considers how limited attention and cognitive biases affect human decisions. Instead of assuming that people always make optimal decisions bases on complete information, this approach tries to infer what people may attend to or ignore from their observed behavior.
+This report discusses two papers that study human behavior prediction from different perspectives. The first paper, Social GAN: Socially Acceptable Trajectories with Generative Adversarial Networks, focuses on predicting multiple possible pedestrian trajectories by modeling social interactions. The second paper, Estimating Cognitive Biases with Attention-Aware Inverse Planning, considers how limited attention and cognitive biases affect human decisions. Instead of assuming that people always make optimal decisions based on complete information, this approach tries to infer what people may attend to or ignore from their observed behavior.
 
-Although the two papers use different methods, both address important challenges in predicting human behavior. Social GAN focusses on generating diverse and socially acceptable future trajectories, while attention-aware inverse planning provides a way to explain behavior through underlying attentional biases. In this report, we review their main approaches, experimental results, and limitations, and discuss how these ideas may help robots interact more safely with humans.
+Although the two papers use different methods, both address important challenges in predicting human behavior. Social GAN focuses on generating diverse and socially acceptable future trajectories, while attention-aware inverse planning provides a way to explain behavior through underlying attentional biases. In this report, we review their main approaches, experimental results, and limitations, and discuss how these ideas may help robots interact more safely with humans.
 
 ## Social GAN: Socially Acceptable Trajectories with Generative Adversarial Networks
 
@@ -74,7 +73,7 @@ $$
 \left\|Y_i-hat{Y}_i{(k)}\right\|_2.
 $$
 
-Here, $Y_i$ is the ground-truth future trajectory, $\hat{Y}_i^{(k)}$ is the $k$-th generated trajectory, and $K$ is the number of sampled predictions. This loss encourages the model to generate different possible trajectories rather then making every prediction close to one average path. The variety loss is combined with adversarial training to improve both diversity and prediction accuracy.
+Here, $Y_i$ is the ground-truth future trajectory, $\hat{Y}_i^{(k)}$ is the $k$-th generated trajectory, and $K$ is the number of sampled predictions. This loss encourages the model to generate different possible trajectories rather than making every prediction close to one average path. The variety loss is combined with adversarial training to improve both diversity and prediction accuracy.
 
 ### Experiments and Results
 
@@ -115,7 +114,7 @@ The qualitative results show that the pooling-based model can better represent b
 
 Social GAN shows that pedestrian trajectory prediction can benefit from modeling both social interactions and multiple possible future movements. Its main contributions include the GAN-based prediction framework, the pooling mechanism for capturing interactions, and the variety loss generating diverse trajectories.
 
-However, the method mainly focuses on pedestrian movement and does not explicit model envioronmental obstacles, scene samentics, or long-term human goals. Its prediction performance also depends on the observed trajectories of surrounding pedestrains, which may be incomplete or noisy in real-world applications.
+However, the method mainly focuses on pedestrian movement and does not explicit model envioronmental obstacles, scene samentics, or long-term human goals. Its prediction performance also depends on the observed trajectories of surrounding pedestrians, which may be incomplete or noisy in real-world applications.
 
 Another limitation is the best-of-multiple-samples evaluation. Although generating several possible trajectories improves ADE and FDE, a robot cannot know in advance which prediction will match the autual future movement. Therefore, additional planing methods would be needed to use these predictions safely in real robot navigation.
 
@@ -229,7 +228,7 @@ Social GAN focuses on predicting where pedestrians may move by learning social i
 
 During the class discussion, one question was how to combine individual pedestrian interactions with global crowd information. The class discussed using attention-based models, such as Transformers, to capture interactions across a scene. However, the professor pointed out that simply including more information may not be enough. Selecting relevant information is also important, especially when interaction data is limited. This also suggests a possible connection between the two papers, where attention modeling could help identify which surrounding agents are most relevant for trajectory prediction.
 
-Another discussion focused on multimodal prediction and generalization. The professor mentioned that generating multiple trajectories does not guarantee that rare behaviors will be captured, since models still depend on the distribution of their training data. This helps explain why the variety loss in Social GAN is useful. The class also raised concerns about whether models trained on limited pedestrian datasets would generalized to different environments, crowded scenes, or people with different movement patterns.
+Another discussion focused on multimodal prediction and generalization. The professor mentioned that generating multiple trajectories does not guarantee that rare behaviors will be captured, since models still depend on the distribution of their training data. This helps explain why the variety loss in Social GAN is useful. The class also raised concerns about whether models trained on limited pedestrian datasets would generalize to different environments, crowded scenes, or people with different movement patterns.
 
 For AAIP, the discussion focused on how attention may change over time and how inferred biases could improve safety. The current method assumes a fixed construal during an episode, but people may shift their attention as situation change. Examples discussed in class included driver warning systems and assistive robots that adapt to a person's behavior. A related challenge is distinguishing between someone ignoring a hazard and knowingly accepting its risk.
 
