@@ -50,29 +50,7 @@ $$
 X_i = \{(x_i^t, y_i^t)\}_{t=1}^{t_{\mathrm{obs}}}
 $$
 
-where 
-
-$$
-(x_i^,y_i^t)
-$$ 
-
-is the position at time $t$. The model then predicts the future trajectory 
-
-$$
-\hat{Y}_i
-$$
-
-from 
-
-$$
-t_{obs}+1
-$$
-
-to 
-
-$$
-t_{pred}
-$$
+where $(x_i^,y_i^t)$ is the position at time $t$. The model then predicts the future trajectory $\hat{Y}_i$ from $t_{obs}+1$ to $t_{pred}$
 
 The model consists of three main components: a Generator, a Pooling Module, and a Discriminator, as shown in Figure 1.
 
@@ -91,9 +69,8 @@ The Discriminator is another LSTM-based network. It receives a complete trajecto
 To improve prediction diversity, the authors introduce a variety loss. For each observed history, the generator produce $K$ possible future trajectories using different random noise samples. The loss is calculated using the generated trajectory closest to the ground truth:
 
 $$
-\mathcal{L}_{variety}
-=
-\min_{K \in \{1, \ldots,K\}}
+\mathcal{L}_{\mathrm{variety}}=
+\min_{k \in \{1, \ldots,K\}}
 \left\|Y_i-hat{Y}_i{(k)}\right\|_2.
 $$
 
@@ -154,7 +131,7 @@ Traditional inverse reinforcement learning (IRL) tries to infer an agent's rewar
 
 Banerjee et al. (2025) proposed Attention-Aware Planning (AAIP) to address this problem. Instead of explaining all behavior through reward preferences, the method models how people select information when making decisions. The main goal is to infer an agent's hidden attentional biases from their observed actions <d-cite key="banerjee2025estimating"></d-cite>.
 
-###Methodology
+### Methodology
 
 The method builds on Value-Guided Construal (VGC), a framework that describes how an agent forms a simplified representation of the environment when planning. Rather than considering every object, the agent selects a subset of objects that are important for making decisions. This subset is called a **construal**, represented by $C$.
 
@@ -195,10 +172,10 @@ $$
 Because the agent's construal is not directly observed, the likelihood is calculated by considering different possible construals:
 
 $$
-P(\zeta \mid \lambda)=\sum_C P(\zeta \mid C)\pi \lambda(C \mid s_1).
+P(\zeta \mid \lambda)=\sum_C P(\zeta \mid C)\pi_ \lambda(C \mid s_1).
 $$
 
-Here, $P(\zeta \mid C)$ measures how well a particular construal explains the observed trajectory, while $\pi \lambda(C \mid s_1)$ represents the probability of selecting that construal at the beginning of the episode.
+Here, $P(\zeta \mid C)$ measures how well a particular construal explains the observed trajectory, while $\pi_ \lambda(C \mid s_1)$ represents the probability of selecting that construal at the beginning of the episode.
 
 For more complex environments, calculating a separate optimal policy for every construal would be expensive. The authors therefore use a pre-trained Proximal Policy Optimization (PPO) policy and mask the observations so that only selected objects are visible. This allows one policy network to approximate decisions under different construals and makes the approach more practical for driving simulations.
 
