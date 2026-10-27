@@ -94,8 +94,6 @@ The authors compared Social GAN with several baseline methods, including Linear 
    caption="Table 1: Quantitative comparison of trajectory prediction methods using ADE and FDE. Reproduced from Gupta et al. (2018), Table 1."
 %}
 
-*Table 1: Average ADE and FDE (meters) for 8_step and 12-step predictions, adapted from Gupta et al. (2018), Table 1. Lower values are better.*
-
 The results show that SGAN-20V-20 achieves the lowest average ADE and FDE among the selected methods. The full model with pooling, SGAN-20VP-20, has slightly higher errors, but still performs better than the LSTM and Social LSTM baselines on average. The Scocial GAN results are based on selecting the best prediction from 20 generated samples during evaluation, while the baseline models produce a single prediction.
 
 The authors also conducted ablation experiments to study the effects of variety loss and social pooling. The results show that variety loss improves prediction accuracy by encouraging the model to generate more diverse possible futures. Simply generating more samples from a model trained without variety loss does not provide the same improvement.
