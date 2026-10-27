@@ -194,7 +194,7 @@ The results show that AAIP can recover some attentional biases from behavior. Th
 
 The authors also compare AAIP with traditional IRL. In an experiment with an agent biased to ignore ice, AAIP achieves a negative log-likelihood (NLL) of 265, while the tested IRL models achieve values between 513 and 537. Lower NLL indicates a better fit to the observed behavior. This comparison shows that changing reward parameters may not fully explain behavior caused by limited attention.
 
-The second experiments uses **GPUDrive**, a driving simulator with scenarios selected from the Waymo Open Motion Dataset. The experiments include situations such as lane changes, merging, and yielding to other vehicles. The authors use a pre-trained PPO policy to simulate driving behavior under different attentional representations.
+The second experiments uses **GPUDrive**, a driving simulator with scenarios selected from the Waymo Open Dataset. The experiments include situations such as lane changes, merging, and yielding to other vehicles. The authors use a pre-trained PPO policy to simulate driving behavior under different attentional representations.
 
 In this environment, the authors generated data from 215 simulated agents, with 80 trajectories per agent across 10 driving scenarios. The attention model uses three heuristic features based on relative vehicles position, heading, and motion.
 
