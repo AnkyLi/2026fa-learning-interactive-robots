@@ -54,7 +54,7 @@ where $(x_i^t,y_i^t)$ is the position at time $t$.
 {% include figure.liquid 
    path="assets/img/2026-10-26-intent-trajectory-prediction/sgan_architecture.png" 
    class="img-fluid rounded z-depth-1" 
-   caption="Figure 2: Social GAN architecture, including the generator, pooling module, and discriminator. Reproduced from Gupta et al. (2018), Figure 2." 
+   caption="Figure 1: Social GAN architecture, including the generator, pooling module, and discriminator. Reproduced from Gupta et al. (2018), Figure 2." 
 %}
 
 The Generator uses an LSTM-based encoder-decoder architecture. The encoder processes the observed positions of each pedestrian and produces hidden states representing their movement history. The Pooling Module then combines information from pedestrians in the scene to capture their interactions. The decoder uses the encoded history, pooled information, and a random noise vector to generate future positions. By sampling different noise vectors, the generator can produce different future trajectories for the same observed history.
