@@ -50,7 +50,29 @@ $$
 X_i = \{(x_i^t, y_i^t)\}_{t=1}^{t_{\mathrm{obs}}}
 $$
 
-where $$(x_i^,y_i^t)$$ is the position at time $t$. The model then predicts the future trajectory $$\hat{Y}_i$$ from $$t_{obs}+1$$ to $$t_{pred}$$.
+where 
+
+$$
+(x_i^,y_i^t)
+$$ 
+
+is the position at time $t$. The model then predicts the future trajectory 
+
+$$
+\hat{Y}_i
+$$
+
+from 
+
+$$
+t_{obs}+1
+$$
+
+to 
+
+$$
+t_{pred}
+$$
 
 The model consists of three main components: a Generator, a Pooling Module, and a Discriminator, as shown in Figure 1.
 
@@ -121,3 +143,105 @@ However, the method mainly focuses on pedestrian movement and does not explicit 
 Another limitation is the best-of-multiple-samples evaluation. Although generating several possible trajectories improves ADE and FDE, a robot cannot know in advance which prediction will match the autual future movement. Therefore, additional planing methods would be needed to use these predictions safely in real robot navigation.
 
 Overall, Social GAN provides an approach for predicting multiple plausible pedestrian trajectories instead of relying on a single future path. It also shows why modeling social interactions is important for robots navigating in environments share  with humans.
+
+## Estimating Cognitive Biases with Attention-Aware Inverse Planning
+
+### Motivation and Problem
+
+Understanding human behavior is important for robots and autonomous systems that interact with people. However, people do not always make optimal decisions, even when they know what they want to achieve. One reason is that human attention is limited. For example, a driver may focus on the car directly ahead but fail to notice an obstacle on the road. The resulting driving behavior may look irrational, even though the driver is still trying to reach the destination safely.
+
+Traditional inverse reinforcement learning (IRL) tries to infer an agent's reward function from observed behavior. However, these methods usually assume that agents make decisions using a complete representation of their environment. This assumption can be problematic when a person makes a mistake because they did not notice something, rather than because they preferred a risky action.
+
+Banerjee et al. (2025) proposed Attention-Aware Planning (AAIP) to address this problem. Instead of explaining all behavior through reward preferences, the method models how people select information when making decisions. The main goal is to infer an agent's hidden attentional biases from their observed actions <d-cite key="banerjee2025estimating"></d-cite>.
+
+###Methodology
+
+The method builds on Value-Guided Construal (VGC), a framework that describes how an agent forms a simplified representation of the environment when planning. Rather than considering every object, the agent selects a subset of objects that are important for making decisions. This subset is called a **construal**, represented by $C$.
+
+For example, when driving on a road with several vehicles and obstacles, a driver may only pay attention to the vehicles that are directly relevant to the current task. This reduces the amount of information the driver needs to process, but it may also lead to unsafe decisions if an important object is ignored.
+
+In VGC, the agent balances the usefulness of a simplified representation against the cost of considering more objects. This is described by the Value of Representation (VOR):
+
+$$
+VOR(s,C) = V(s,\pi_C) + Cost(C)
+$$
+
+Here, $s$ is the environment state, $\pi_C$ is the policy based on the selected construal, and $Cost(C)$ represents the cognitive cost of maintaining that representation. The agent prefers a construal that supports effective decisions without requiring too much attention.
+
+The authors extend this framework by adding a parameterized heuristic bias function, $H_\lambda(s,C)$. These biases represent an agent's tendency to attend to or ignore certain objects based on factors such as prior experience or visual salience. The probability of choosing a construal is modeled as
+
+$$
+\pi_\lambda(C \mid s)
+\propto
+\exp\left(VOR(s,C)+H_\lambda(s,C)\right).
+$$
+
+The parameter $\lambda$ controls the attentional biases. For example, a driver who is less likely to notice ice on the road may have a negative attention weight associated with ice patches.
+
+Figure 3 illustrates how different attention biases can change an agent's driving trajectories, even when the task and reward function remain the same.
+
+{% include figure.liquid
+   path="assets/img/2026-10-26-intent-trajectory-prediction/aaip_attention_bias.png"
+   class="img-fluid rounded z-depth-1"
+   caption="Figure 3: Driving trajectories under different attentional biases. Reproduced from Banerjee et al. (2025), Figure 1."
+%}
+
+The main task of AAIP is to infer the hidden bias parameters from observed behavior. Given a state-action trajectory $\zeta$, the method uses maximum-likelihood estimation to find the parameters that best explain the observed actions:
+
+$$
+\lambda^*=\arg\max_\lambda P(\zeta \mid \lambda).
+$$
+
+Because the agent's construal is not directly observed, the likelihood is calculated by considering different possible construals:
+
+$$
+P(\zeta \mid \lambda)=\sum_C P(\zeta \mid C)\pi \lambda(C \mid s_1).
+$$
+
+Here, $P(\zeta \mid C)$ measures how well a particular construal explains the observed trajectory, while $\pi \lambda(C \mid s_1)$ represents the probability of selecting that construal at the beginning of the episode.
+
+For more complex environments, calculating a separate optimal policy for every construal would be expensive. The authors therefore use a pre-trained Proximal Policy Optimization (PPO) policy and mask the observations so that only selected objects are visible. This allows one policy network to approximate decisions under different construals and makes the approach more practical for driving simulations.
+
+### Experiments and Results
+
+The authors evaluated AAIP in two enviroments: DrivingWorld and GPUDrive. Both experiments use simulated agents with known attentional biases, allowing the researchers to compare the estimated parameters with the true values.
+
+The first experiments uses **DrivingWorld**, a simplified driving environment containing parked cars, ice patches, traffic cones, and a goal location. The agent must move toward the goal while avoiding obstacles. Three attentional bias parameters are considered, corresponding to ice, cones, and parked cars.
+
+The authors generated behavioral data from 1,000 simulated agents with different bias weights. Each agent produced 125 trajectories across 25 scenarios. The model then estimated the three bias parameters from the observed trajectories.
+
+Figure 4 compares the true bias weights with the estimated values.
+
+{% include figure.liquid
+   path="assets/img/2026-10-26-intent-trajectory-prediction/aaip_drivingworld_results.png"
+   class="img-fluid rounded z-depth-1"
+   caption="Figure 4: Recovery of attentional bias weights in DrivingWorld. Reproduced from Banerjee et al. (2025), Figure 2."
+%}
+
+The results show that AAIP can recover some attentional biases from behavior. The reported $R^2$ values are 0.77 for ice, 0.76 for cones, and 0.37 for parked cars. The lower result for parked cars suggests that some biases are more difficult to identify because avoiding parked cars is already strongly related to the task objective.
+
+The authors also compare AAIP with traditional IRL. In an experiment with an agent biased to ignore ice, AAIP achieves a negative log-likelihood (NLL) of 265, while the tested IRL models achieve values between 513 and 537. Lower NLL indicates a better fit to the observed behavior. This comparison shows that changing reward parameters may not fully explain behavior caused by limited attention.
+
+The second experiments uses **GPUDrive**, a driving simulator with scenarios selected from the Waymo Open Motion Dataset. The experiments include situations such as lane changes, merging, and yielding to other vehicles. The authors use a pre-trained PPO policy to simulate driving behavior under different attentional representations.
+
+In this environment, the authors generated data from 215 simulated agents, with 80 trajectories per agent across 10 driving scenarios. The attention model uses three heuristic features based on relative vehicles position, heading, and motion.
+
+Figure 5 shows the results of estimating the attentional bias weights in GPUDrive.
+
+{% include figure.liquid
+   path="assets/img/2026-10-26-intent-trajectory-prediction/aaip_gpudrive_results.png"
+   class="img-fluid rounded z-depth-1"
+   caption="Figure 5: Recovery of attentional bias weights in GPUDrive using Waymo driving scenarios. Reproduced from Banerjee et al. (2025), Figure 5."
+%}
+
+The results shows positive relationships between the true and estimated weights for all three heuristics, with $R^2$ values of 0.77, 0.76, and 0.83. These results suggests that AAIP can recover attentional bias parameters in more complex driving environments, not only simplified tabular tasks.
+
+### Limitations and Takeaways
+
+AAIP provides a different way to understand human behavior by explicitly modeling limited attention. Unlike standard IRL, which mainly explains behavior through reward functions, AAIP considers what information an agent may have attended to when making decisions. This can help explain why a person sometimes behaves in a way that appears suboptimal.
+
+However, the experiments are based on synthetic agents rather than actual human drivers. Although GPUDrive uses real-world driving scenarios, the behavior used for bias estimation is generated by simulated policies. Therefore, the results do not yet demonstrate that the method can accurately identify attentional biases in real human behavior.
+
+The method also assumes known task rewards and predefined attention heuristics. In real environments, people may change their attention during an interaction, while the current model keeps the selected construal fixed throughout an episode. In addition, using a masked pre-trained PPO policy may not always produce optimal behavior under each simplified representation.
+
+Overall, AAIP shows that understanding human behavior required considering not only what people want to achieve, but also what information they use when making decisions. For human-robot interaction, this perspective may help autonomous systems better predict and respond to behaviors caused by limited attention.
