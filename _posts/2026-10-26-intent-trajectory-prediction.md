@@ -245,3 +245,16 @@ However, the experiments are based on synthetic agents rather than actual human 
 The method also assumes known task rewards and predefined attention heuristics. In real environments, people may change their attention during an interaction, while the current model keeps the selected construal fixed throughout an episode. In addition, using a masked pre-trained PPO policy may not always produce optimal behavior under each simplified representation.
 
 Overall, AAIP shows that understanding human behavior required considering not only what people want to achieve, but also what information they use when making decisions. For human-robot interaction, this perspective may help autonomous systems better predict and respond to behaviors caused by limited attention.
+
+## Comparison and Discussion
+
+Social GAN focuses on predicting where pedestrians may move by learning social interactions from trajectory data. In contrast, Attention-Aware Inverse Planning (AAIP) tries to explain why people behave in certain ways by modeling their limited attention. Social GAN can generate multiple possible future trajectories, while AAIP provides a more interpretable explanation of behavior through attentional biases.
+
+During the class discussion, one question was how to combine individual pedestrian interactions with global crowd information. The class discussed using attention-based models, such as Transformers, to capture interactions across a scene. However, the professor pointed out that simply including more information may not be enough. Selecting relevant information is also important, especially when interaction data is limited. This also suggests a possible connection between the two papers, where attention modeling could help identify which surrounding agents are most relevant for trajectory prediction.
+
+Another discussion focused on multimodal prediction and generalization. The professor mentioned that generating multiple trajectories does not guarantee that rare behaviors will be captured, since models still depend on the distribution of their training data. This helps explain why the variety loss in Social GAN is useful. The class also raised concerns about whether models trained on limited pedestrian datasets would generalized to different environments, crowded scenes, or people with different movement patterns.
+
+For AAIP, the discussion focused on how attention may change over time and how inferred biases could improve safety. The current method assumes a fixed construal during an episode, but people may shift their attention as situation change. Examples discussed in class included driver warning systems and assistive robots that adapt to a person's behavior. A related challenge is distinguishing between someone ignoring a hazard and knowingly accepting its risk.
+
+Overall, the discussion highlighted that predicting common behaviors is not enough for safe human-robot interaction. Rare or unexpected behaviors may be especially important, even when they are not well represented in training data. Combining trajectory prediction with attention-aware modeling could be an interesting direction for future research.
+
