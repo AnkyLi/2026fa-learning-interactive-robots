@@ -49,14 +49,12 @@ $$
 X_i = \{(x_i^t, y_i^t)\}_{t=1}^{t_{\mathrm{obs}}}
 $$
 
-where $(x_i^,y_i^t)$ is the position at time $t$. The model then predicts the future trajectory $\hat{Y}_i$ from $t_{obs}+1$ to $t_{pred}$
-
-The model consists of three main components: a Generator, a Pooling Module, and a Discriminator, as shown in Figure 1.
+where $(x_i^t,y_i^t)$ is the position at time $t$.
 
 {% include figure.liquid 
    path="assets/img/2026-10-26-intent-trajectory-prediction/sgan_architecture.png" 
    class="img-fluid rounded z-depth-1" 
-   caption="Figure 1: Social GAN architecture, showing the generator, pooling module, and discriminator. Adapted from Gupta et al. (2018), Figure 2." 
+   caption="Figure 2: Social GAN architecture, including the generator, pooling module, and discriminator. Reproduced from Gupta et al. (2018), Figure 2." 
 %}
 
 The Generator uses an LSTM-based encoder-decoder architecture. The encoder processes the observed positions of each pedestrian and produces hidden states representing their movement history. The Pooling Module then combines information from pedestrians in the scene to capture their interactions. The decoder uses the encoded history, pooled information, and a random noise vector to generate future positions. By sampling different noise vectors, the generator can produce different future trajectories for the same observed history.
@@ -70,7 +68,7 @@ To improve prediction diversity, the authors introduce a variety loss. For each 
 $$
 \mathcal{L}_{\mathrm{variety}}=
 \min_{k \in \{1, \ldots,K\}}
-\left\|Y_i-hat{Y}_i{(k)}\right\|_2.
+\left\|Y_i-\hat{Y}_i{(k)}\right\|_2.
 $$
 
 Here, $Y_i$ is the ground-truth future trajectory, $\hat{Y}_i^{(k)}$ is the $k$-th generated trajectory, and $K$ is the number of sampled predictions. This loss encourages the model to generate different possible trajectories rather than making every prediction close to one average path. The variety loss is combined with adversarial training to improve both diversity and prediction accuracy.
@@ -126,7 +124,7 @@ Understanding human behavior is important for robots and autonomous systems that
 
 Traditional inverse reinforcement learning (IRL) tries to infer an agent's reward function from observed behavior. However, these methods usually assume that agents make decisions using a complete representation of their environment. This assumption can be problematic when a person makes a mistake because they did not notice something, rather than because they preferred a risky action.
 
-Banerjee et al. (2025) proposed Attention-Aware Planning (AAIP) to address this problem. Instead of explaining all behavior through reward preferences, the method models how people select information when making decisions. The main goal is to infer an agent's hidden attentional biases from their observed actions <d-cite key="banerjee2025estimating"></d-cite>.
+Banerjee et al. (2025) proposed Attention-Aware Inverse Planning (AAIP) to address this problem. Instead of explaining all behavior through reward preferences, the method models how people select information when making decisions. The main goal is to infer an agent's hidden attentional biases from their observed actions <d-cite key="banerjee2025estimating"></d-cite>.
 
 ### Methodology
 
@@ -218,7 +216,7 @@ However, the experiments are based on synthetic agents rather than actual human 
 
 The method also assumes known task rewards and predefined attention heuristics. In real environments, people may change their attention during an interaction, while the current model keeps the selected construal fixed throughout an episode. In addition, using a masked pre-trained PPO policy may not always produce optimal behavior under each simplified representation.
 
-Overall, AAIP shows that understanding human behavior required considering not only what people want to achieve, but also what information they use when making decisions. For human-robot interaction, this perspective may help autonomous systems better predict and respond to behaviors caused by limited attention.
+Overall, AAIP shows that understanding human behavior requires considering not only what people want to achieve, but also what information they use when making decisions. For human-robot interaction, this perspective may help autonomous systems better predict and respond to behaviors caused by limited attention.
 
 ## Comparison and Discussion
 
